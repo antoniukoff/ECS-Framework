@@ -35,7 +35,9 @@
 	  <Mesh name="PlaneMesh" filename="meshes/Plane.obj">
 		  <Shape name="CheckerboardPlaneShape">
 			  <!--TODO for Assignment 1-->
-			  <Box 
+			  <Box centreX ="0.0" centreY ="0.0" centreZ ="0.0"
+				   halfExtentsX ="5.1" halfExtentsY ="5.1" halfExtentsZ ="0.1"
+				   angleDeg ="0.0" axisX="1.0" axisY="0.0" axisZ="0.0"
 				/>
 		  </Shape>
 	  </Mesh>
@@ -43,7 +45,9 @@
 	  <Mesh name="CubeMesh" filename="meshes/Cube.obj">
 		  <Shape name ="CubeShape">
 			  <!--TODO for Assignment 1-->
-			  <Box 
+			  <Box centreX ="0.0" centreY ="0.0" centreZ ="0.0"
+				  halfExtentsX ="1.0" halfExtentsY ="1.0" halfExtentsZ ="1.0"
+				  angleDeg ="0.0" axisX="1.0" axisY="0.0" axisZ="0.0"  
 				/>
 		  </Shape>
 	  </Mesh>
@@ -63,7 +67,7 @@
 				   angleDeg="-20.0" axisx="1.0" axisy="0.0" axisz="0.0"
 				   scalex="1.0" scaley="1.0" scalez="1.0"/>
 		<Mesh name="PlaneMesh"/>
-		<Shape name="SkullSphereShape"/>
+		<Shape name="CheckerboardPlaneShape"/>
 		<Shader name ="Shader"/>
 		<Material name ="BoardMaterial"/>
 		<Physics />
@@ -107,7 +111,7 @@
 					 angleDeg="45.0" axisx="1.0" axisy="1.0" axisz="0.0"
 					 scalex="1.0" scaley="1.0" scalez="1.0"/>
 		  <Mesh name="CubeMesh"/>
-		  <Shape name="marioCapsuleShape"/>
+		  <Shape name="CubeShape"/>
 		  <Shader name ="Shader"/>
 		  <Material name ="RedCheckerMaterial"/>
 		  <Physics />

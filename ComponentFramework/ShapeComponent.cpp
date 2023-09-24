@@ -22,6 +22,13 @@ ShapeComponent::ShapeComponent(Component* parent_, GEOMETRY::Capsule capsule_) :
 	shape = std::make_shared<Capsule>(capsule_.r, capsule_.topPoint, capsule_.bottomPoint);
 }
 
+ShapeComponent::ShapeComponent(Component* parent_, GEOMETRY::Box box_): Component(parent_)
+{
+	shapeType = ShapeType::box;
+
+	shape = std::make_shared<Box>(box_.centre, box_.halfExtents, box_.orientation);
+}
+
 // TODO for Assignment 1:
 // The other constructors that take in Cylinder, Capsule, or Box 
 
