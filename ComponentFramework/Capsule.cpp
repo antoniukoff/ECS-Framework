@@ -29,7 +29,7 @@ void GEOMETRY::Capsule::generateVerticesAndNormals()
 	// deltaPhi governs how close each point will be per ring. Try messing with it
 	const float deltaPhi = 14.0f;
 
-	const float deltaRing = 0.05f;
+	const float deltaRing = 0.18f;
 	Vec3 circle;
 	for (float thetaDeg = 0.0f; thetaDeg <= 180.0f; thetaDeg += deltaTheta)
 	{
@@ -49,11 +49,11 @@ void GEOMETRY::Capsule::generateVerticesAndNormals()
 	}
 	for (float thetaDeg = 0.0f; thetaDeg <= 360.0f; thetaDeg += deltaTheta) {
 		circle = Vec3(r * -sin(thetaDeg * DEGREES_TO_RADIANS), 0.0f , r * cos(thetaDeg * DEGREES_TO_RADIANS));
+		circle += bottomPoint;
 		vertices.push_back(circle);
 		//	// The normal of a sphere points outwards from the center position Vec3(x, y, z)
 		normals.push_back(circle);
-		float innerLength = VMath::distance(topPoint, bottomPoint);
-		for (float i = 0; i <= innerLength - r * 2; i += deltaRing) {
+		for (float i = bottomPoint.y; i <= topPoint.y; i += deltaRing) {
 			circle.y += deltaRing;
 			vertices.push_back(circle);
 			// The normal of a sphere points outwards from the center position Vec3(x, y, z)
@@ -65,7 +65,7 @@ void GEOMETRY::Capsule::generateVerticesAndNormals()
 	{
 		// Build a ring
 		circle = Vec3(r * cos(thetaDeg * DEGREES_TO_RADIANS), r * -sin(thetaDeg * DEGREES_TO_RADIANS), 0.0f);
-		circle = circle - bottomPoint - topPoint;
+		circle += bottomPoint;
 		for (float phiDeg = 0.0f; phiDeg <= 180.0f; phiDeg += deltaPhi) {
 			// Rotate a point in the ring around the y-axis to build a sphere!
 			Matrix3 rotationMatrix = MMath::rotate(deltaPhi, Vec3(0.0f, 1.0f, 0.0f));

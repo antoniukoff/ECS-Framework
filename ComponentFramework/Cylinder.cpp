@@ -36,11 +36,11 @@ void GEOMETRY::Cylinder::generateVerticesAndNormals()
             //draw a bottom lid of the capsule
             if (phiDeg == 3)
             {
-                for (int i = 10; i > 1; )
+                for (int i = 9; i > 1; )
                 {
                     scaleMatrix = MMath::scale(Vec3(i / deltaRing, i / deltaRing, 0.0f));
                     circle = scaleMatrix * circle;
-                    circle.z += phiDeg + 1;
+                    circle.z += phiDeg;
                     vertices.push_back(circle);
                     normals.push_back(circle);
                     i--;
