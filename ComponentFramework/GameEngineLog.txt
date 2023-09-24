@@ -1,0 +1,19 @@
+Thu Sep 21 20:06:57 2023
+[INFO]: Starting the SceneManager
+[INFO]: OpenGL version: 4.6.14761 Compatibility Profile Context FireGL 21.30.44.17 30.0.13044.17006
+[INFO]: Graphics card vendor ATI Technologies Inc.
+[INFO]: Graphics card name Radeon Pro 555X
+[INFO]: GLSL Version 4.60
+[INFO]: Uniforms:
+"projection" loc:-1
+"view" loc:-1
+"lightPos" loc:-1
+"colour" loc:-1
+"modelMatrix" loc:2
+"myTexture" loc:3
+
+[INFO]: Deleting assets for Actor/Components: 
+[INFO]: Deleting assets for Actor/Components: 
+[INFO]: Deleting assets for Actor/Components: 
+[INFO]: Deleting assets for Actor/Components: 
+[INFO]: Deleting assets for Actor/Components: 
