@@ -131,7 +131,7 @@
 	  <!-- Set up camera and light actors-->
 	  <Camera cameraname="Camera1" parent="none">
 		  <Transform posx="0.0" posy="0.0" posz="0.0" 
-					 angleDeg="0.0" axisx="1.0" axisy="0.0" axisz="0.0"
+					 angleDeg="90.0" axisx="0.0" axisy="1.0" axisz="0.0"
 					 scalex="1.0" scaley="1.0" scalez="1.0"/>
 	  </Camera>
 

@@ -87,7 +87,8 @@ void CameraActor::UpdateViewMatrix()
 		// This is viewpoint of the model (right to left)
 		// but from the point of view of the camera read from left to right. It's weird
 		// I'm used to rotating on right side for models. But from the camera's vantage point we read the other way round
-		viewMatrix = MMath::toMatrix4(orientation) * MMath::translate(position);
+		viewMatrix = MMath::translate(position) * MMath::toMatrix4(orientation);
+		viewMatrix = MMath::inverse(viewMatrix);
 		// forget using the scale matrix above. What does that even mean for a camera?
 	}
 	size_t offset = sizeof(Matrix4); // start where the projection matrix ended

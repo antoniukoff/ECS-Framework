@@ -12,6 +12,7 @@
 #include "ShaderComponent.h"
 #include "MeshComponent.h"
 #include "ShapeComponent.h"
+#include "QuadraticSolver.h"
 
 bool Scene0::OnCreate()
 {
@@ -27,6 +28,9 @@ bool Scene0::OnCreate()
 	}
 	camera = std::dynamic_pointer_cast<CameraActor>(assetManager.xmlAssets.find("Camera1")->second);
 	light = std::dynamic_pointer_cast<LightActor>(assetManager.xmlAssets.find("Light1")->second);
+	GEOMETRY::QuadraticSolver test;
+	test = GEOMETRY::solveQuadratic(3.0f, -4.0f, -2.0f);
+
 	return true;
 }
 
@@ -62,6 +66,7 @@ void Scene0::HandleEvents(const SDL_Event& sdlEvent)
 			camera->UpdateViewMatrix();
 
 		}
+	
 		else if (sdlEvent.key.keysym.scancode == SDL_SCANCODE_W) {
 			cameraTransform->SetTransform(cameraTransform->pos, cameraTransform->GetOrientation() * QMath::angleAxisRotation(2.0f, Vec3(1.0f, 0.0f, 0.0f)));
 			camera->UpdateViewMatrix();
@@ -84,25 +89,28 @@ void Scene0::HandleEvents(const SDL_Event& sdlEvent)
 	case SDL_MOUSEBUTTONDOWN:
 		if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
 			Vec4 mouseCoords(static_cast<float>(sdlEvent.button.x), static_cast<float>(sdlEvent.button.y), 0.0f, 1.0f);
-			mouseCoords = Vec4(1280.0f/2, 720.0f/2, 0.0f, 1.0);
+			//mouseCoords = Vec4(1280.0f/2, 720.0f/2, 0.0f, 1.0);
 			mouseCoords.print("mouse coords are: ");
 
 			Matrix4 NDCToPixelSpace = MMath::viewportNDC(1280, 720);
 			Vec4 mouseNDCCoords = MMath::inverse(NDCToPixelSpace) * mouseCoords;
-			mouseNDCCoords.z = 0.0f;
+			mouseNDCCoords.z = -1.0f;
 			mouseNDCCoords.print("Ndc Space");
 
 			Matrix4 perspectiveToNdc = camera->GetProjectionMatrix();
 			Vec4 mouseperspectiveCoords = MMath::inverse(perspectiveToNdc) * mouseNDCCoords;
+			mouseperspectiveCoords /= mouseperspectiveCoords.w;
 			mouseperspectiveCoords.print("perspective Space");
 			
 			Matrix4 worldToSpace = camera->GetViewMatrix();
 			Vec4 mouseWorldCoords = MMath::inverse(worldToSpace) * mouseperspectiveCoords;
 			mouseWorldCoords.print("world coords Space");
 
-			Vec3 rayDir = VMath::normalize(mouseWorldCoords);
-			Vec3 rayStart = Vec3(0.0f, 0.0f, 0.0f);
-
+			/// Ray starts at the camera world position
+			Vec3 rayStart = camera->GetComponent<TransformComponent>()->pos;
+			///Ray direction is from the camera position to the front clipping plane
+			Vec3 rayDir = mouseWorldCoords - rayStart;
+			//rayDir.print();
 			// TODO for Assignment 2: 
 			// Get a ray pointing into the world, We have the x, y pixel coordinates
 			// Need to convert this into world space to build our ray
