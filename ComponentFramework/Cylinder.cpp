@@ -52,3 +52,8 @@ void GEOMETRY::Cylinder::generateVerticesAndNormals()
     // Once we are all done filling the vertices and normals, use the base class method to store the data in the GPU
     StoreMeshData(GL_POINTS);
 }
+
+RayIntersectionInfo GEOMETRY::Cylinder::rayIntersectionInfo(const Ray& ray) const
+{
+    return RayIntersectionInfo();
+}

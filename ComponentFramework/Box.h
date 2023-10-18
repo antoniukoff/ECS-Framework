@@ -2,6 +2,7 @@
 #include "Shape.h"
 #include <Quaternion.h>
 
+
 namespace GEOMETRY {
 	struct Box : public Shape
 	{
@@ -29,5 +30,6 @@ namespace GEOMETRY {
 		}
 		// Fill the vertices and normals list with Vec3's to represent a box
 		void generateVerticesAndNormals() override;
+		RayIntersectionInfo rayIntersectionInfo(const Ray& ray) const override;
 	};
 }

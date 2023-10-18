@@ -27,7 +27,7 @@ namespace GEOMETRY
 		}
 		MATH::Vec3 currentPosition(float t) const {
 			return start + (dir * t);
-		}// returns start + t * dir
+		}
 	};
 }
 

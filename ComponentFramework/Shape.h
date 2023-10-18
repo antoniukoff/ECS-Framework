@@ -9,11 +9,12 @@
 #include <glew.h>
 #include <vector>
 #include <Vector.h>
+#include "Ray.h"
 namespace GEOMETRY {
 	struct Shape {
 		// TODO for Assignment 2:
  		// Anything that can be hit by a ray needs to be part of this class heirachy
-		// virtual RayIntersectionInfo rayIntersectionInfo(const Ray& ray) const = 0;
+		virtual RayIntersectionInfo rayIntersectionInfo(const Ray& ray) const = 0;
 
 		// It's handy for any shape to draw itself for debugging purposes
 		virtual void generateVerticesAndNormals() = 0;

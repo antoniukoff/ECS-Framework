@@ -1,4 +1,5 @@
 #include <glew.h>
+#include <conio.h>
 #include <iostream>
 #include <SDL.h>
 #include "Debug.h"
@@ -30,7 +31,7 @@ bool Scene0::OnCreate()
 	light = std::dynamic_pointer_cast<LightActor>(assetManager.xmlAssets.find("Light1")->second);
 	GEOMETRY::QuadraticSolver test;
 	test = GEOMETRY::solveQuadratic(3.0f, -4.0f, -2.0f);
-
+	test.print();
 	return true;
 }
 
@@ -88,23 +89,28 @@ void Scene0::HandleEvents(const SDL_Event& sdlEvent)
 		
 	case SDL_MOUSEBUTTONDOWN:
 		if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
+
+			//std::cout << std::string(100, '\n');
+
 			Vec4 mouseCoords(static_cast<float>(sdlEvent.button.x), static_cast<float>(sdlEvent.button.y), 0.0f, 1.0f);
 			//mouseCoords = Vec4(1280.0f/2, 720.0f/2, 0.0f, 1.0);
-			mouseCoords.print("mouse coords are: ");
+			//mouseCoords.print("mouse coords are: ");
 
 			Matrix4 NDCToPixelSpace = MMath::viewportNDC(1280, 720);
 			Vec4 mouseNDCCoords = MMath::inverse(NDCToPixelSpace) * mouseCoords;
 			mouseNDCCoords.z = -1.0f;
-			mouseNDCCoords.print("Ndc Space");
+			//mouseNDCCoords.print("Ndc Space");
 
 			Matrix4 perspectiveToNdc = camera->GetProjectionMatrix();
 			Vec4 mouseperspectiveCoords = MMath::inverse(perspectiveToNdc) * mouseNDCCoords;
 			mouseperspectiveCoords /= mouseperspectiveCoords.w;
-			mouseperspectiveCoords.print("perspective Space");
+			//mouseperspectiveCoords.print("perspective Space");
 			
 			Matrix4 worldToSpace = camera->GetViewMatrix();
 			Vec4 mouseWorldCoords = MMath::inverse(worldToSpace) * mouseperspectiveCoords;
-			mouseWorldCoords.print("world coords Space");
+			//mouseWorldCoords.print("world coords Space");
+	
+			
 
 			/// Ray starts at the camera world position
 			Vec3 rayStart = camera->GetComponent<TransformComponent>()->pos;
@@ -120,9 +126,20 @@ void Scene0::HandleEvents(const SDL_Event& sdlEvent)
 			for (auto it = actors.begin(); it != actors.end(); ++it) {
 				Ref<Actor> actor = std::dynamic_pointer_cast<Actor>(it->second);
 				Ref<TransformComponent> transformComponent = actor->GetComponent <TransformComponent>();
-				Ref<ShapeComponent> shapeComponent = actor->GetComponent <ShapeComponent>();
+				Ref<ShapeComponent> shapeComponent = actor->GetComponent<ShapeComponent>();
 				// TODO for Assignment 2: 
 				// Transform the ray into the local space of the object and check if a collision occured
+				Matrix4 worldToPaulNeale = MMath::inverse(actor->GetModelMatrix());
+				Vec4 rayStartPaulNeale = worldToPaulNeale * Vec4(rayStart, 1.0f);
+				Vec4 rayDirPaulNealeSpace = worldToPaulNeale * Vec4(rayDir, 0.0f);
+				GEOMETRY::Ray rayPaulNealeSpace(rayStartPaulNeale, rayDirPaulNealeSpace);
+
+				rayInfo = shapeComponent->shape->rayIntersectionInfo(rayPaulNealeSpace);
+				if (rayInfo.isIntersected) {
+					std::cout << "You picked: " << it->first << '\n';
+					pickedActor = actor; // make a member variable called pickedActor. Will come in handy later…
+					haveClickedOnSomething = true; // make this a member variable too. Set it to false before we loop over each actor
+				}
 			}
 		}
 		break;

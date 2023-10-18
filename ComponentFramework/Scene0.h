@@ -4,6 +4,7 @@
 #include "Actor.h"
 #include "LightActor.h"
 #include "CameraActor.h"
+#include "Ray.h"
 
 struct Scene0 : public Scene
 {
@@ -25,6 +26,8 @@ struct Scene0 : public Scene
 	Ref<LightActor> light;
 	// TODO for Assignment 2:
 	// We'll use a ray to click on our geometry objects 
-	// GEOMETRY::RayIntersectionInfo rayInfo;
+	GEOMETRY::RayIntersectionInfo rayInfo;
+	Ref<Actor> pickedActor;
+	bool haveClickedOnSomething = false;
 };
 

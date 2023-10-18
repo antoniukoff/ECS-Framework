@@ -4,7 +4,7 @@
 	  <!--Setting up meshes and shapes-->
 	  <Mesh name="SkullMesh" filename="meshes/Skull.obj">
 		  <Shape name ="SkullSphereShape">
-			  <Sphere radius ="1.5" centreX="30.0" centreY="0.0" centreZ="0.0"/>
+			  <Sphere radius ="1.5" centreX="0.0" centreY="0.0" centreZ="0.0"/>
 		  </Shape>
 	  </Mesh>
 
@@ -131,7 +131,7 @@
 	  <!-- Set up camera and light actors-->
 	  <Camera cameraname="Camera1" parent="none">
 		  <Transform posx="0.0" posy="0.0" posz="0.0" 
-					 angleDeg="90.0" axisx="0.0" axisy="1.0" axisz="0.0"
+					 angleDeg="0.0" axisx="0.0" axisy="1.0" axisz="0.0"
 					 scalex="1.0" scaley="1.0" scalez="1.0"/>
 	  </Camera>
 

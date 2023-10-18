@@ -97,3 +97,8 @@ void GEOMETRY::Box::generateVerticesAndNormals()
 
 	StoreMeshData(GL_TRIANGLES);
 }
+
+GEOMETRY::RayIntersectionInfo GEOMETRY::Box::rayIntersectionInfo(const Ray& ray) const
+{
+	return RayIntersectionInfo();
+}

@@ -1,8 +1,35 @@
 #include "Sphere.h"
 #include <MMath.h>
+#include "QuadraticSolver.h"
 
 using namespace MATH;
 using namespace GEOMETRY;
+
+RayIntersectionInfo GEOMETRY::Sphere::rayIntersectionInfo(const Ray& ray) const
+{
+	//need to code up umers scribbles
+	Vec3 D = ray.dir;
+	Vec3 S = ray.start;
+	Vec3 C = Vec3(x, y, z);
+	
+	float a = VMath::dot(D, D);
+	float b = 2 * (VMath::dot(S, D) - VMath::dot(D, C));
+	float c = VMath::dot(S, S) + VMath::dot(C, C) - 2 * VMath::dot(S, C) - r * r;
+
+	QuadraticSolver answer = solveQuadratic(a, b, c);
+
+	RayIntersectionInfo info;
+
+	if (answer.numSolutions == NumSolutions::ZERO) {
+		return RayIntersectionInfo();
+	}
+	else if (answer.numSolutions == NumSolutions::ONE || answer.numSolutions == NumSolutions::TWO) {
+		info.isIntersected = true;
+		info.t = answer.firstSolution;
+		info.intersectoinPoint = ray.currentPosition(info.t);
+		return info;
+	}
+}
 
 void Sphere::generateVerticesAndNormals()
 {
