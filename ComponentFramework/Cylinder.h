@@ -1,6 +1,5 @@
 #pragma once
-#include"Shape.h"
-
+#include "Shape.h"
 
 namespace GEOMETRY{
 	struct Cylinder :public Shape

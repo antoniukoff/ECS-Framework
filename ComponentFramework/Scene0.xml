@@ -11,12 +11,12 @@
 	  <Mesh name="CheckerMesh" filename="meshes/CheckerPiece.obj">
 		  <Shape name ="CheckerCylinderShape">
 			  <!--TODO for Assignment 1-->
-			  <Cylinder  radius ="4" 
+			  <Cylinder  radius ="3.5" 
 						 capCentrePosAx ="0.0f"
-						 capCentrePosAy ="5.0f"
-						 capCentrePosAz ="0.0f"
+						 capCentrePosAy ="0.0f"
+						 capCentrePosAz ="2.75f"
 						 capCentrePosBx ="0.0f"
-						 capCentrePosBy ="-5.0f"
+						 capCentrePosBy ="0.0f"
 						 capCentrePosBz ="0.0f"
 				/>
 		  </Shape>
@@ -85,8 +85,8 @@
 	  </Actor>
 
 	  <Actor actorname="ActorChecker2" parent="none">
-		  <Transform posx="-18.0" posy="0.0" posz="-14.0"
-					 angleDeg="-45.0" axisx="1.0" axisy="1.0" axisz="0.0"
+		  <Transform posx="18.0" posy="0.0" posz="-14.0"
+					 angleDeg="0.0" axisx="1.0" axisy="0.0" axisz="0.0"
 					 scalex="1.0" scaley="1.0" scalez="1.0"/>
 		  <Mesh name="CheckerMesh"/>
 		  <Shape name="CheckerCylinderShape"/>

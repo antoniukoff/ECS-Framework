@@ -90,27 +90,20 @@ void Scene0::HandleEvents(const SDL_Event& sdlEvent)
 	case SDL_MOUSEBUTTONDOWN:
 		if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
 
-			//std::cout << std::string(100, '\n');
+			std::cout << std::string(100, '\n');
 
 			Vec4 mouseCoords(static_cast<float>(sdlEvent.button.x), static_cast<float>(sdlEvent.button.y), 0.0f, 1.0f);
-			//mouseCoords = Vec4(1280.0f/2, 720.0f/2, 0.0f, 1.0);
-			//mouseCoords.print("mouse coords are: ");
 
 			Matrix4 NDCToPixelSpace = MMath::viewportNDC(1280, 720);
 			Vec4 mouseNDCCoords = MMath::inverse(NDCToPixelSpace) * mouseCoords;
 			mouseNDCCoords.z = -1.0f;
-			//mouseNDCCoords.print("Ndc Space");
 
 			Matrix4 perspectiveToNdc = camera->GetProjectionMatrix();
 			Vec4 mouseperspectiveCoords = MMath::inverse(perspectiveToNdc) * mouseNDCCoords;
 			mouseperspectiveCoords /= mouseperspectiveCoords.w;
-			//mouseperspectiveCoords.print("perspective Space");
 			
 			Matrix4 worldToSpace = camera->GetViewMatrix();
 			Vec4 mouseWorldCoords = MMath::inverse(worldToSpace) * mouseperspectiveCoords;
-			//mouseWorldCoords.print("world coords Space");
-	
-			
 
 			/// Ray starts at the camera world position
 			Vec3 rayStart = camera->GetComponent<TransformComponent>()->pos;
@@ -152,6 +145,9 @@ void Scene0::HandleEvents(const SDL_Event& sdlEvent)
 
 void Scene0::Update(const float deltaTime)
 {
+	auto actor = std::dynamic_pointer_cast<Actor>(actors.find("ActorChecker2")->second);
+	auto transform = actor->GetComponent<TransformComponent>();
+	transform->SetTransform(transform->pos, transform->GetOrientation() * QMath::angleAxisRotation(2.0f, Vec3(0.0f, 1.0f, 0.0f)));
 }
 
 void Scene0::Render() const

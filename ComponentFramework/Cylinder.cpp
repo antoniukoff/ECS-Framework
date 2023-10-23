@@ -14,39 +14,43 @@ void GEOMETRY::Cylinder::generateVerticesAndNormals()
     const float deltaPhi = 0.5f;
     const float deltaRing = 10.0f;
     Matrix3 scaleMatrix;
+
+
+    Vec3 axis = VMath::normalize(capCentrePosB - capCentrePosA);
+    Vec3 randomVector(12, 7, 314);
+    Vec3 radialVector = VMath::normalize(VMath::cross(axis, randomVector));
+    radialVector *= radius ;
+
     for (float thetaDeg = 0.0f; thetaDeg <= 360.0f; thetaDeg += deltaTheta)
     {
         // Build a ring
-        Vec3 circle(radius * sin(thetaDeg * DEGREES_TO_RADIANS), radius * cos(thetaDeg * DEGREES_TO_RADIANS), 0.0f);
-        for (int i = 10; i > 1; )
+        Vec3 circle = MMath::rotate(thetaDeg, axis) * radialVector;
+        for (int i = 10; i > -1; )
         {
             //a top lid of the capsule
             scaleMatrix = MMath::scale(Vec3(i / deltaRing, i / deltaRing, 0.0f));
             Vec3 scaledCircle = scaleMatrix * circle;
+            scaledCircle += capCentrePosB;
             vertices.push_back(scaledCircle);
             normals.push_back(scaledCircle);
             i--;
         }
         //draw subsequent capsule rings
-        for (float phiDeg = deltaPhi; phiDeg <= 3; phiDeg += deltaPhi)
+        for (float phiDeg = capCentrePosB.z; phiDeg <= capCentrePosA.z; phiDeg += deltaPhi)
         {
-            circle.z += deltaPhi;
+            circle.z = phiDeg;
             vertices.push_back(circle);
             normals.push_back(circle);
-
-            //draw a bottom lid of the capsule
-            if (phiDeg == 3)
-            {
-                for (int i = 9; i > 1; )
-                {
-                    scaleMatrix = MMath::scale(Vec3(i / deltaRing, i / deltaRing, 0.0f));
-                    circle = scaleMatrix * circle;
-                    circle.z += phiDeg;
-                    vertices.push_back(circle);
-                    normals.push_back(circle);
-                    i--;
-                }
-            }
+        }
+        //draw a bottom lid of the capsule
+        for (int i = 10; i > -1; )
+        {
+            scaleMatrix = MMath::scale(Vec3(i / deltaRing, i / deltaRing, 0.0f));
+            Vec3 scaledCircle = scaleMatrix * circle;
+            scaledCircle += capCentrePosA;
+            vertices.push_back(scaledCircle);
+            normals.push_back(scaledCircle);
+            i--;
         }
     }
 
@@ -60,23 +64,53 @@ RayIntersectionInfo GEOMETRY::Cylinder::rayIntersectionInfo(const Ray& ray) cons
     if (rayInfo.isIntersected == false) {
         return rayInfo;
     }
-       // are we outside of endCapA
     Vec3 P = ray.currentPosition(rayInfo.t);
     Vec3 AP = P - capCentrePosA;
+    Vec3 BP = P - capCentrePosB;
     Vec3 AB = capCentrePosB - capCentrePosA;
+    Vec3 BA = capCentrePosA - capCentrePosB;
+  
     //Step 1 check if we are outside endCapA
     if (VMath::dot(AB, AP) < 0) {
-        // We are outside endCapA
-        //Step 2 Is the ray direction towards endCapA
+    //    // We are outside endCap A
+    //    //Step 2 Is the ray direction towards endCapA
         if (VMath::dot(AB, ray.dir) > 0) {
-            // The ray is pointing towards end cap A
             //Step 3 Plane Intersection
             Vec3 planeA_normal = VMath::normalize(-AB);
             float planeA_D = VMath::dot(planeA_normal, capCentrePosA);
-
+            float t = (planeA_D - VMath::dot(planeA_normal, ray.start)) / VMath::dot(planeA_normal, ray.dir);
+            Vec3 Q = ray.currentPosition(t);
+            // step 4 is q inside the circle
+            if (VMath::distance(capCentrePosA, Q) <= radius) {
+                return rayInfo;
+            }
+            else {
+                rayInfo = RayIntersectionInfo();
+                return rayInfo;
+            }
         }
         else {
-            return RayIntersectionInfo();
+            rayInfo = RayIntersectionInfo();
+            return rayInfo;
+        }
+    }
+    else if (VMath::dot(VMath::normalize(AB), AP) > VMath::mag(AB)) {
+        if (VMath::dot(BA, ray.dir) > 0) {
+            //Step 3 Plane Intersection
+            Vec3 planeB_normal = VMath::normalize(-BA);
+            float planeB_D = VMath::dot(planeB_normal, capCentrePosB);
+            float t = (planeB_D - VMath::dot(planeB_normal, ray.start)) / VMath::dot(planeB_normal, ray.dir);
+            Vec3 Q = ray.currentPosition(t);
+            // step 4 is q inside the circle
+            if (VMath::distance(capCentrePosB, Q) <= radius) {
+                return rayInfo;
+            }
+            else {
+                rayInfo = RayIntersectionInfo();
+            }
+        }
+        else {
+            rayInfo = RayIntersectionInfo();
         }
     }
     return rayInfo;
@@ -86,25 +120,24 @@ RayIntersectionInfo GEOMETRY::Cylinder::checkInfiniteCylinder(const Ray& ray) co
 {
     Vec3 D = ray.dir;
     Vec3 ABnormalized = VMath::normalize(-capCentrePosA + capCentrePosB);
-    Vec3 AS = -capCentrePosA + ray.dir;
+    Vec3 AS = -capCentrePosA + ray.start;
 
     float a = VMath::dot(D, D) - (VMath::dot(D, ABnormalized) * VMath::dot(D, ABnormalized));
     float b = 2 * (VMath::dot(AS, D) - VMath::dot(AS, ABnormalized) * VMath::dot(D, ABnormalized));
     float c = VMath::dot(AS, AS) - (VMath::dot(AS, ABnormalized) * VMath::dot(AS, ABnormalized)) - (radius * radius);
 
-
+     
     RayIntersectionInfo rayInfo;
 
     QuadraticSolver answer = solveQuadratic(a, b, c);
     if (answer.numSolutions == NumSolutions::ZERO) {
-        return RayIntersectionInfo();
+        rayInfo = RayIntersectionInfo();
     }
     else if (answer.numSolutions == NumSolutions::ONE || answer.numSolutions == NumSolutions::TWO) {
         rayInfo.isIntersected = true;
         rayInfo.t = answer.firstSolution;
         rayInfo.intersectoinPoint = ray.currentPosition(rayInfo.t);
-        return rayInfo;
-    }
+    } 
     return rayInfo;
 }
 
