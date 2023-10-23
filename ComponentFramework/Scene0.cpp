@@ -145,7 +145,7 @@ void Scene0::HandleEvents(const SDL_Event& sdlEvent)
 
 void Scene0::Update(const float deltaTime)
 {
-	auto actor = std::dynamic_pointer_cast<Actor>(actors.find("ActorChecker2")->second);
+	auto actor = std::dynamic_pointer_cast<Actor>(actors.find("ActorGameBoard")->second);
 	auto transform = actor->GetComponent<TransformComponent>();
 	transform->SetTransform(transform->pos, transform->GetOrientation() * QMath::angleAxisRotation(2.0f, Vec3(0.0f, 1.0f, 0.0f)));
 }
