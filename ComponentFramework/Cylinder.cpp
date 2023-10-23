@@ -66,9 +66,7 @@ RayIntersectionInfo GEOMETRY::Cylinder::rayIntersectionInfo(const Ray& ray) cons
     }
     Vec3 P = ray.currentPosition(rayInfo.t);
     Vec3 AP = P - capCentrePosA;
-    Vec3 BP = P - capCentrePosB;
     Vec3 AB = capCentrePosB - capCentrePosA;
-    Vec3 BA = capCentrePosA - capCentrePosB;
   
     //Step 1 check if we are outside endCapA
     if (VMath::dot(AB, AP) < 0) {
@@ -85,19 +83,17 @@ RayIntersectionInfo GEOMETRY::Cylinder::rayIntersectionInfo(const Ray& ray) cons
                 return rayInfo;
             }
             else {
-                rayInfo = RayIntersectionInfo();
-                return rayInfo;
+                return RayIntersectionInfo();
             }
         }
         else {
-            rayInfo = RayIntersectionInfo();
-            return rayInfo;
+            return RayIntersectionInfo();
         }
     }
     else if (VMath::dot(VMath::normalize(AB), AP) > VMath::mag(AB)) {
-        if (VMath::dot(BA, ray.dir) > 0) {
+        if (VMath::dot(-AB, ray.dir) > 0) {
             //Step 3 Plane Intersection
-            Vec3 planeB_normal = VMath::normalize(-BA);
+            Vec3 planeB_normal = VMath::normalize(AB);
             float planeB_D = VMath::dot(planeB_normal, capCentrePosB);
             float t = (planeB_D - VMath::dot(planeB_normal, ray.start)) / VMath::dot(planeB_normal, ray.dir);
             Vec3 Q = ray.currentPosition(t);
@@ -106,14 +102,16 @@ RayIntersectionInfo GEOMETRY::Cylinder::rayIntersectionInfo(const Ray& ray) cons
                 return rayInfo;
             }
             else {
-                rayInfo = RayIntersectionInfo();
+                return RayIntersectionInfo();
             }
         }
         else {
-            rayInfo = RayIntersectionInfo();
+            return RayIntersectionInfo();
         }
     }
-    return rayInfo;
+    else {
+        return rayInfo;
+    }
 }
 
 RayIntersectionInfo GEOMETRY::Cylinder::checkInfiniteCylinder(const Ray& ray) const

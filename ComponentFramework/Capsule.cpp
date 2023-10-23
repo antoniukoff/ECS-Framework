@@ -1,5 +1,6 @@
 #include "Capsule.h"
-
+#include "Cylinder.h"
+#include "Sphere.h"
 #include <MMath.h>
 using namespace MATH;
 	
@@ -84,5 +85,34 @@ void GEOMETRY::Capsule::generateVerticesAndNormals()
 
 GEOMETRY::RayIntersectionInfo GEOMETRY::Capsule::rayIntersectionInfo(const Ray& ray) const
 {
-	return RayIntersectionInfo();
+
+	RayIntersectionInfo rayInfo;
+	/// Capsule is two spheres connected by a cylinder
+	Cylinder cylinderInCapsule(r, topPoint, bottomPoint);
+	rayInfo = cylinderInCapsule.checkInfiniteCylinder(ray);
+
+	if (rayInfo.isIntersected == false) {
+		return rayInfo;
+	}
+	Vec3 P = ray.currentPosition(rayInfo.t);
+	Vec3 AP = P - topPoint;
+	Vec3 AB = bottomPoint - topPoint;
+	Vec3 BP = P - bottomPoint;
+
+	//Step 1 check if we are outside endCapA
+	if (VMath::dot(AB, AP) < 0) {
+			Sphere sphereA(topPoint, r);
+			RayIntersectionInfo raySphereInfo = sphereA.rayIntersectionInfo(ray);
+			return raySphereInfo; 
+	}
+	
+	else if (VMath::dot(VMath::normalize(AB), AP) > VMath::mag(AB)) {
+		Sphere sphereA(bottomPoint, r);
+		RayIntersectionInfo raySphereInfo = sphereA.rayIntersectionInfo(ray);
+		return raySphereInfo;
+	}
+	else {
+		return rayInfo;
+	}
+	return rayInfo;
 }
