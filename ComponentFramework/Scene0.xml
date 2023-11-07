@@ -107,7 +107,7 @@
 	  </Actor>
 
 	  <Actor actorname="ActorCube" parent="none">
-		  <Transform posx="1.0" posy="2.0" posz="-16.0"
+		  <Transform posx="7.5" posy="2.0" posz="-16.0"
 					 angleDeg="45.0" axisx="1.0" axisy="1.0" axisz="0.0"
 					 scalex="1.0" scaley="1.0" scalez="1.0"/>
 		  <Mesh name="CubeMesh"/>

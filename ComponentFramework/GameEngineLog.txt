@@ -1,4 +1,4 @@
-Thu Nov  2 18:32:02 2023
+Tue Nov  7 18:53:11 2023
 [INFO]: Starting the SceneManager
 [INFO]: OpenGL version: 4.6.14761 Compatibility Profile Context FireGL 21.30.44.17 30.0.13044.17006
 [INFO]: Graphics card vendor ATI Technologies Inc.
@@ -12,3 +12,4 @@ Thu Nov  2 18:32:02 2023
 "modelMatrix" loc:2
 "myTexture" loc:3
 
+[INFO]: Deleting assets for Actor/Components: 
