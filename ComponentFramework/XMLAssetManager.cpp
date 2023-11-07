@@ -323,5 +323,12 @@ void XMLAssetManager::AddPhysicsToActor(const tinyxml2::XMLElement* child, Ref<A
 	// TODO for assignment 3
 	// Add a default physics component to the actor, but don't forget to match transform component's position & orientation
 	// You're gonna have to assume the transform component has already been built (fingers crossed!)
+	Ref<TransformComponent> tr = actor->GetComponent<TransformComponent>();
+	if (tr == nullptr) {
+		std::string errorMsg = __FILE__ + __LINE__;
+		throw errorMsg.append(": You need a Transform to add Physics");
+	}
+	Vec3 pos = tr->pos;
+	Quaternion orientation = tr->orientation;
+	// Now make physics component, set Physics position and orientation from the Transform
 }
-

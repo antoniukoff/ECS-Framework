@@ -118,12 +118,18 @@ GEOMETRY::RayIntersectionInfo GEOMETRY::Box::rayIntersectionInfo(const Ray& ray)
 			float t2 = (slabs[i].distFar - VMath::dot(slabs[i].normal, ray.start)) / VMath::dot(slabs[i].normal, ray.dir);
 			// Set tNear to be the smaller of the two t values
 			float tNear = std::min(t1, t2);
+			
 			// Set tFar to be the larger of the two t values
 			float tFar = std::max(t1, t2);
+			
 			// Update tmin so that it is the largest tNear value found so far
-			tmin = tNear;
+			if(tmin < tNear)
+				tmin = tNear;
+
 			// Update tmax so that it is the smallest tFar value found so far
-			tmax = tFar;
+			if(tmax > tFar)
+				tmax = tFar;
+
 			if (tmin > tmax) {
 				// If tmin is greater than tmax, then we didn't intersect the box, get outta 
 				// here

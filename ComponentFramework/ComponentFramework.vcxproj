@@ -155,6 +155,7 @@
     <ClCompile Include="LightActor.cpp" />
     <ClCompile Include="MaterialComponent.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
+    <ClCompile Include="Physics.cpp" />
     <ClCompile Include="QuadraticSolver.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Scene0.cpp" />
@@ -181,6 +182,8 @@
     <ClInclude Include="LightActor.h" />
     <ClInclude Include="MaterialComponent.h" />
     <ClInclude Include="MeshComponent.h" />
+    <ClInclude Include="Physics.h" />
+    <ClInclude Include="PhysicsComponent.h" />
     <ClInclude Include="QuadraticSolver.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Scene0.h" />
