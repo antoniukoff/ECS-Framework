@@ -115,7 +115,7 @@ GEOMETRY::RayIntersectionInfo GEOMETRY::Box::rayIntersectionInfo(const Ray& ray)
 		//particular axis
 			float t1 = (slabs[i].distNear - VMath::dot(slabs[i].normal, ray.start)) / VMath::dot(slabs[i].normal, ray.dir);
 			// Check intersection with the far plane. Do another ray-plane check
-			float t2 = (slabs[i].distFar - VMath::dot(slabs[i].normal, ray.start)) / VMath::dot(slabs[i].normal, ray.dir);
+			float t2 =	(slabs[i].distFar - VMath::dot(slabs[i].normal, ray.start)) / VMath::dot(slabs[i].normal, ray.dir);
 			// Set tNear to be the smaller of the two t values
 			float tNear = std::min(t1, t2);
 			
@@ -131,8 +131,7 @@ GEOMETRY::RayIntersectionInfo GEOMETRY::Box::rayIntersectionInfo(const Ray& ray)
 				tmax = tFar;
 
 			if (tmin > tmax) {
-				// If tmin is greater than tmax, then we didn't intersect the box, get outta 
-				// here
+				// If tmin is greater than tmax, then we didn't intersect the box, get outta here
 					return RayIntersectionInfo();
 			}
 	}
