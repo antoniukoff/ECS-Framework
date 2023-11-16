@@ -16,7 +16,6 @@ bool MaterialComponent::OnCreate() {
 		glGenTextures(1, &textureID);
 		// Tells the GPU that the textureID is a GL_TEXTURE_2D
 		glBindTexture(GL_TEXTURE_2D, textureID);
-		// Scott likes SDL as it has an image loader (unlike GLFW)
 		SDL_Surface* textureSurface = IMG_Load(filename);
 		if (textureSurface == nullptr) {
 			return false;
