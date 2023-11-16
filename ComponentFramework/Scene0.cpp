@@ -150,21 +150,21 @@ void Scene0::Update(const float deltaTime)
 	auto actor = std::dynamic_pointer_cast<Actor>(actors.find("ActorGameBoard")->second);
 	auto transform = actor->GetComponent<TransformComponent>();
 	transform->SetTransform(transform->pos, transform->GetOrientation() * QMath::angleAxisRotation(2.0f, Vec3(0.0f, 1.0f, 0.0f)));
-	//if (haveClickedOnSomething) {
-	//	Ref<PhysicsComponent> body = pickedActor->GetComponent<PhysicsComponent>();
-	//	// Set up gravity and drag forces
-	//	Vec3 gravityForce(0.0f, -9.8f * body->mass, 0.0f);
-	//	float dragCoeff = 0.25f;
-	//	Vec3 dragForce = body->vel * (-dragCoeff);
-	//	Vec3 netForce = gravityForce + dragForce;
-	//	Physics::ApplyForce(body, netForce);
-	//	// We are going to update the position and velocity in separate steps
-	//	// This will make our constrained motion a bit easier later on
-	//	Physics::UpdatePos(body, deltaTime);
-	//	Physics::UpdateVel(body, deltaTime);
-	//	// Ensure the actor’s transform component matches the physics component
-	//	Physics::UpdateTransform(pickedActor);
-	//}
+	if (haveClickedOnSomething) {
+		Ref<PhysicsComponent> body = pickedActor->GetComponent<PhysicsComponent>();
+		// Set up gravity and drag forces
+		Vec3 gravityForce(0.0f, -9.8f * body->mass, 0.0f);
+		float dragCoeff = 0.25f;
+		Vec3 dragForce = body->vel * (-dragCoeff);
+		Vec3 netForce = gravityForce + dragForce;
+		Physics::ApplyForce(body, netForce);
+		// We are going to update the position and velocity in separate steps
+		// This will make our constrained motion a bit easier later on
+		Physics::UpdatePos(body, deltaTime);
+		Physics::UpdateVel(body, deltaTime);
+		// Ensure the actor’s transform component matches the physics component
+		Physics::UpdateTransform(pickedActor);
+	}
 
 }
 

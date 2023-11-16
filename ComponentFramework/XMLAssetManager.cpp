@@ -5,6 +5,7 @@
 #include "ShaderComponent.h"
 #include "MeshComponent.h"
 #include "ShapeComponent.h"
+#include "PhysicsComponent.h"
 #include "MaterialComponent.h"
 #include "CameraActor.h"
 #include "LightActor.h"
@@ -331,4 +332,10 @@ void XMLAssetManager::AddPhysicsToActor(const tinyxml2::XMLElement* child, Ref<A
 	Vec3 pos = tr->pos;
 	Quaternion orientation = tr->orientation;
 	// Now make physics component, set Physics position and orientation from the Transform
+	Ref<PhysicsComponent> physics = std::make_shared<PhysicsComponent>(parent);
+	physics->pos = pos;
+	physics->orientation = orientation;
+
+	actor->AddComponent<PhysicsComponent>(physics);
+
 }
