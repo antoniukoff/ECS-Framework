@@ -138,7 +138,6 @@ void Scene0::HandleEvents(const SDL_Event& sdlEvent)
 			}
 		}
 		break;
-
 	default:
 		break;
 	}
@@ -153,19 +152,23 @@ void Scene0::Update(const float deltaTime)
 	if (haveClickedOnSomething) {
 		Ref<PhysicsComponent> body = pickedActor->GetComponent<PhysicsComponent>();
 		// Set up gravity and drag forces
-		Vec3 gravityForce(0.0f, -9.8f * body->mass, 0.0f);
+		Vec3 gravityForce(0.0f, -0.8f * body->mass, 0.0f);
 		float dragCoeff = 0.25f;
 		Vec3 dragForce = body->vel * (-dragCoeff);
 		Vec3 netForce = gravityForce + dragForce;
 		Physics::ApplyForce(body, netForce);
 		// We are going to update the position and velocity in separate steps
 		// This will make our constrained motion a bit easier later on
-		Physics::UpdatePos(body, deltaTime);
+		// Calculates the approximation of the velocity
 		Physics::UpdateVel(body, deltaTime);
+		// Correct the velocity to follow the constraints
+		float slope = -1.0f;
+		float yIntercept = 15.0f;
+		Physics::StraightLineConstraint(body, deltaTime, slope, yIntercept);
+		Physics::UpdatePos(body, deltaTime);
 		// Ensure the actor’s transform component matches the physics component
 		Physics::UpdateTransform(pickedActor);
 	}
-
 }
 
 void Scene0::Render() const

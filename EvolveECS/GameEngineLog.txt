@@ -1,4 +1,4 @@
-Thu Nov 16 16:41:47 2023
+Sun Dec  3 16:23:32 2023
 [INFO]: Starting the SceneManager
 [INFO]: OpenGL version: 4.6.0 NVIDIA 536.23
 [INFO]: Graphics card vendor NVIDIA Corporation
@@ -13,11 +13,3 @@ Thu Nov 16 16:41:47 2023
 "view" loc:-1
 
 [INFO]: Deleting assets for Actor/Components: 
-[INFO]: Deleting assets for Actor/Components: 
-[INFO]: Deleting assets for Actor/Components: 
-[INFO]: Deleting assets for Actor/Components: 
-[INFO]: Deleting assets for Actor/Components: 
-[INFO]: Deleting assets for Actor/Components: 
-[INFO]: Deleting assets for Actor/Components: 
-[INFO]: Deleting assets for Actor/Components: 
-[INFO]: Deleting the SceneManager

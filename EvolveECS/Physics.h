@@ -22,6 +22,8 @@ namespace Physics {
 	// Finally, multiply by the original orientation to find the new one
 	// body->orientation = rotation * body->orientation;
 	void UpdateOrientation(Ref<PhysicsComponent> body, float deltaTime);
+	void StraightLineConstraint(Ref<PhysicsComponent> body, float deltaTime, float slope, float yIntercept);
+	void PlaneConstraint(Ref<PhysicsComponent> body, float deltaTime, const Vec3& normal, float distance);
 	// Ensure the actor’s transform component has the same position and orientation 
 	// as the physics component. Otherwise graphics won’t match physics
 	void UpdateTransform(Ref<Actor> actor);
