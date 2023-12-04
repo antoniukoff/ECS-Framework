@@ -22,7 +22,7 @@ bool Scene0::OnCreate()
 	XMLAssetManager assetManager;
 	// Make sure these names match the stuff in your xml file:
 	std::vector<std::string> names{ 
-		"ActorGameBoard" , /*"ActorChecker1"*/ "ActorChecker2", 
+		"ActorGameBoard", "ActorChecker1", "ActorChecker2", 
 		"ActorSkull", "ActorCube", "ActorMario"
 	};
 	for (const auto& name : names) {
@@ -31,9 +31,6 @@ bool Scene0::OnCreate()
 	}
 	camera = std::dynamic_pointer_cast<CameraActor>(assetManager.xmlAssets.find("Camera1")->second);
 	light = std::dynamic_pointer_cast<LightActor>(assetManager.xmlAssets.find("Light1")->second);
-	GEOMETRY::QuadraticSolver test;
-	test = GEOMETRY::solveQuadratic(3.0f, -4.0f, -2.0f);
-	test.print();
 	return true;
 }
 
@@ -146,13 +143,14 @@ void Scene0::HandleEvents(const SDL_Event& sdlEvent)
 
 void Scene0::Update(const float deltaTime)
 {
-	auto actor = std::dynamic_pointer_cast<Actor>(actors.find("ActorGameBoard")->second);
-	auto transform = actor->GetComponent<TransformComponent>();
-	transform->SetTransform(transform->pos, transform->GetOrientation() * QMath::angleAxisRotation(2.0f, Vec3(0.0f, 1.0f, 0.0f)));
+	//auto actor = std::dynamic_pointer_cast<Actor>(actors.find("ActorGameBoard")->second);
+	//auto transform = actor->GetComponent<TransformComponent>();
+	//transform->SetTransform(transform->pos, transform->GetOrientation() * QMath::angleAxisRotation(2.0f, Vec3(0.0f, 1.0f, 0.0f)));
+	
 	if (haveClickedOnSomething) {
 		Ref<PhysicsComponent> body = pickedActor->GetComponent<PhysicsComponent>();
 		// Set up gravity and drag forces
-		Vec3 gravityForce(0.0f, -0.8f * body->mass, 0.0f);
+		Vec3 gravityForce(0.0f, -9.8f * body->mass, 0.0f);
 		float dragCoeff = 0.25f;
 		Vec3 dragForce = body->vel * (-dragCoeff);
 		Vec3 netForce = gravityForce + dragForce;
@@ -161,11 +159,35 @@ void Scene0::Update(const float deltaTime)
 		// This will make our constrained motion a bit easier later on
 		// Calculates the approximation of the velocity
 		Physics::UpdateVel(body, deltaTime);
+
+/*** Straight line constraint ***/
+
 		// Correct the velocity to follow the constraints
-		float slope = -1.0f;
-		float yIntercept = 15.0f;
-		Physics::StraightLineConstraint(body, deltaTime, slope, yIntercept);
+		//float slope = -1.0f;
+		//float yIntercept = 15.0f;
+		//Physics::StraightLineConstraint(body, deltaTime, slope, yIntercept);
+
+/*** Plane constraint ***/
+
+		Vec3 planeNormal = VMath::normalize(Vec3(0.0f, 1.0f, 1.0f));
+		Ref<Actor> gameBoard = std::dynamic_pointer_cast<Actor>(actors.find("ActorGameBoard")->second);
+		Vec3 pointOnPlane = gameBoard->GetComponent<TransformComponent>()->pos;
+		float planeDistance = VMath::dot(planeNormal, pointOnPlane);
+		Ref<ShapeComponent> shapeComponent = pickedActor->GetComponent<ShapeComponent>();
+		float radius = 0.0f;
+		if (shapeComponent->shapeType == ShapeType::sphere) {
+			radius = std::dynamic_pointer_cast<GEOMETRY::Sphere>(shapeComponent->shape)->r;
+			planeDistance += radius;
+			// calculate the angular velocity using the velocity and the radius of skull
+			float angularVelMagnitude = VMath::mag(body->vel) / radius;
+			Vec3 radiusVector = radius * planeNormal;
+			Vec3 axisOfRotation = VMath::normalize(VMath::cross(radiusVector, body->vel));
+			// There seems to be a bug in angularVelMag
+			body->angularVel = angularVelMagnitude * axisOfRotation;
+		}
+		Physics::PlaneConstraint(body, deltaTime, planeNormal, planeDistance);
 		Physics::UpdatePos(body, deltaTime);
+		Physics::UpdateOrientation(body, deltaTime);
 		// Ensure the actor’s transform component matches the physics component
 		Physics::UpdateTransform(pickedActor);
 	}
@@ -174,7 +196,7 @@ void Scene0::Update(const float deltaTime)
 void Scene0::Render() const
 {
 	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindBuffer(GL_UNIFORM_BUFFER, camera->GetMatricesID());
 	glBindBuffer(GL_UNIFORM_BUFFER, light->GetLightID());
