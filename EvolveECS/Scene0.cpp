@@ -22,7 +22,7 @@ bool Scene0::OnCreate()
 	XMLAssetManager assetManager;
 	// Make sure these names match the stuff in your xml file:
 	std::vector<std::string> names{ 
-		"ActorGameBoard", "ActorChecker1", "ActorChecker2", 
+		/*"ActorGameBoard",*/ /*"ActorChecker1",*/ "ActorChecker2", 
 		"ActorSkull", "ActorCube", "ActorMario"
 	};
 	for (const auto& name : names) {
@@ -31,6 +31,15 @@ bool Scene0::OnCreate()
 	}
 	camera = std::dynamic_pointer_cast<CameraActor>(assetManager.xmlAssets.find("Camera1")->second);
 	light = std::dynamic_pointer_cast<LightActor>(assetManager.xmlAssets.find("Light1")->second);
+
+	for (auto it = actors.begin(); it != actors.end(); ++it) {
+		Ref<Actor> actor = std::dynamic_pointer_cast<Actor>(it->second);
+		Ref<TransformComponent> transformComponent = actor->GetComponent <TransformComponent>();
+		Ref<PhysicsComponent> physicsComponent = actor->GetComponent <PhysicsComponent>();
+		Matrix3 inverseRotationalMatrix_ = MMath::inverse(MMath::toMatrix3(transformComponent->orientation));
+		physicsComponent->inverseRotationMatrix = inverseRotationalMatrix_;
+	}
+
 	return true;
 }
 
@@ -131,6 +140,10 @@ void Scene0::HandleEvents(const SDL_Event& sdlEvent)
 					std::cout << "You picked: " << it->first << '\n';
 					pickedActor = actor; // make a member variable called pickedActor. Will come in handy later…
 					haveClickedOnSomething = true; // make this a member variable too. Set it to false before we loop over each actor
+					intersectionPoint = transformComponent->GetTransformMatrix() * rayInfo.intersectoinPoint;
+					Ref<PhysicsComponent> physicsComponent = actor->GetComponent <PhysicsComponent>();
+					Matrix3 inverseRotationalMatrix_ = MMath::inverse(MMath::toMatrix3(transformComponent->orientation));
+					physicsComponent->inverseRotationMatrix = inverseRotationalMatrix_;
 				}
 			}
 		}
@@ -142,11 +155,7 @@ void Scene0::HandleEvents(const SDL_Event& sdlEvent)
 }
 
 void Scene0::Update(const float deltaTime)
-{
-	//auto actor = std::dynamic_pointer_cast<Actor>(actors.find("ActorGameBoard")->second);
-	//auto transform = actor->GetComponent<TransformComponent>();
-	//transform->SetTransform(transform->pos, transform->GetOrientation() * QMath::angleAxisRotation(2.0f, Vec3(0.0f, 1.0f, 0.0f)));
-	
+{	
 	if (haveClickedOnSomething) {
 		Ref<PhysicsComponent> body = pickedActor->GetComponent<PhysicsComponent>();
 		// Set up gravity and drag forces
@@ -155,37 +164,47 @@ void Scene0::Update(const float deltaTime)
 		Vec3 dragForce = body->vel * (-dragCoeff);
 		Vec3 netForce = gravityForce + dragForce;
 		Physics::ApplyForce(body, netForce);
-		// We are going to update the position and velocity in separate steps
-		// This will make our constrained motion a bit easier later on
+/*
+* We are going to update the position and velocity in separate steps
+* This will make our constrained motion a bit easier later on
+*/
 		// Calculates the approximation of the velocity
 		Physics::UpdateVel(body, deltaTime);
 
+		// Correct the velocity with constraints
 /*** Straight line constraint ***/
 
-		// Correct the velocity to follow the constraints
 		//float slope = -1.0f;
 		//float yIntercept = 15.0f;
 		//Physics::StraightLineConstraint(body, deltaTime, slope, yIntercept);
 
 /*** Plane constraint ***/
-
-		Vec3 planeNormal = VMath::normalize(Vec3(0.0f, 1.0f, 1.0f));
-		Ref<Actor> gameBoard = std::dynamic_pointer_cast<Actor>(actors.find("ActorGameBoard")->second);
-		Vec3 pointOnPlane = gameBoard->GetComponent<TransformComponent>()->pos;
-		float planeDistance = VMath::dot(planeNormal, pointOnPlane);
-		Ref<ShapeComponent> shapeComponent = pickedActor->GetComponent<ShapeComponent>();
-		float radius = 0.0f;
-		if (shapeComponent->shapeType == ShapeType::sphere) {
-			radius = std::dynamic_pointer_cast<GEOMETRY::Sphere>(shapeComponent->shape)->r;
-			planeDistance += radius;
-			// calculate the angular velocity using the velocity and the radius of skull
-			float angularVelMagnitude = VMath::mag(body->vel) / radius;
-			Vec3 radiusVector = radius * planeNormal;
-			Vec3 axisOfRotation = VMath::normalize(VMath::cross(radiusVector, body->vel));
-			// There seems to be a bug in angularVelMag
-			body->angularVel = angularVelMagnitude * axisOfRotation;
-		}
-		Physics::PlaneConstraint(body, deltaTime, planeNormal, planeDistance);
+//		// The plane is defined by a normal and a distance from the origin
+//		Vec3 planeNormal = VMath::normalize(Vec3(0.0f, 1.0f, 1.0f));
+//		Ref<Actor> gameBoard = std::dynamic_pointer_cast<Actor>(actors.find("ActorGameBoard")->second);
+//		// The point on the plane is the position of the game board
+//		Vec3 pointOnPlane = gameBoard->GetComponent<TransformComponent>()->pos;
+//		// The distance from the origin is the dot product of the normal and the point on the plane
+//		float planeDistance = VMath::dot(planeNormal, pointOnPlane);
+//		Ref<ShapeComponent> shapeComponent = pickedActor->GetComponent<ShapeComponent>();
+//		float radius = 0.0f;
+//		if (shapeComponent->shapeType == ShapeType::sphere) {
+//			radius = std::dynamic_pointer_cast<GEOMETRY::Sphere>(shapeComponent->shape)->r;
+//			planeDistance += radius; // Adjust for sphere radius
+//			// Calculate the angular velocity using the velocity and the radius of skull
+//			float angularVelMagnitude = VMath::mag(body->vel) / radius;
+///*
+//* the axis of rotation is the cross product of the plane normal and the velocity
+//* e.g. if the plane normal is (0, 1, 0) and the velocity is (1, 0, 0)
+//* the axis of rotation is (0, 0, -1)
+//* can test it by using the right hand rule
+//*/
+//			Vec3 axisOfRotation = VMath::normalize(VMath::cross(planeNormal, body->vel));
+//			// There seems to be a bug in angularVelMag
+//			body->angularVel = angularVelMagnitude * axisOfRotation;
+//		}
+//		Physics::PlaneConstraint(body, deltaTime, planeNormal, planeDistance);
+		Physics::MouseConstraint(body, deltaTime, intersectionPoint);
 		Physics::UpdatePos(body, deltaTime);
 		Physics::UpdateOrientation(body, deltaTime);
 		// Ensure the actor’s transform component matches the physics component

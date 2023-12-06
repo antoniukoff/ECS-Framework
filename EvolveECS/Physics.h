@@ -4,7 +4,7 @@
 #include "Actor.h"
 
 namespace Physics {
-	// All the physics equations you need under one namespace
+// All the physics equations you need under one namespace
 // I got this idea from Beautiful C++: 30 Core Guidelines for Writing Clean, 
 // Safe, and Fast Code by Davidson & Gregory
 // Updates acceleration using a = force/mass
@@ -24,6 +24,9 @@ namespace Physics {
 	void UpdateOrientation(Ref<PhysicsComponent> body, float deltaTime);
 	void StraightLineConstraint(Ref<PhysicsComponent> body, float deltaTime, float slope, float yIntercept);
 	void PlaneConstraint(Ref<PhysicsComponent> body, float deltaTime, const Vec3& normal, float distance);
+	// Using Allen Chou's slides for a mouse constraint
+	// http://allenchou.net/files/slides/2014/constraint-based-physics.pdf
+	void MouseConstraint(Ref<PhysicsComponent> body, float deltaTime, const MATH::Vec3& mousePos);
 	// Ensure the actor’s transform component has the same position and orientation 
 	// as the physics component. Otherwise graphics won’t match physics
 	void UpdateTransform(Ref<Actor> actor);

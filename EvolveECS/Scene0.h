@@ -29,5 +29,6 @@ struct Scene0 : public Scene
 	GEOMETRY::RayIntersectionInfo rayInfo;
 	Ref<Actor> pickedActor;
 	bool haveClickedOnSomething = false;
+	Vec3 intersectionPoint;
 };
 

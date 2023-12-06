@@ -14,7 +14,7 @@
 			  <Cylinder  radius ="3.5" 
 						 capCentrePosAx ="0.0f"
 						 capCentrePosAy ="0.0f"
-						 capCentrePosAz ="4f"
+						 capCentrePosAz ="4.0f"
 						 capCentrePosBx ="0.0f"
 						 capCentrePosBy ="0.0f"
 						 capCentrePosBz ="0.0f"

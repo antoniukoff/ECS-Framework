@@ -10,6 +10,7 @@ struct PhysicsComponent : public Component {
 	MATH::Quaternion orientation;
 	MATH::Vec3 angularVel;
 	MATH::Vec3 angularAcc;
+	MATH::Matrix3 inverseRotationMatrix;
 
 	PhysicsComponent(Component* parent_) : Component(parent_) {};
 	~PhysicsComponent() {};

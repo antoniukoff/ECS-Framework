@@ -1,11 +1,11 @@
 #include "Physics.h"
 #include "TransformComponent.h"
 #include <QMath.h>
+#include <MMath.h>
+
 void Physics::ApplyForce(Ref<PhysicsComponent> body, const MATH::Vec3& force)
 {
 	body->accel = force / body->mass;
-
-
 }
 
 void Physics::UpdatePos(Ref<PhysicsComponent> body, float deltaTime)
@@ -20,8 +20,13 @@ void Physics::UpdateVel(Ref<PhysicsComponent> body, float deltaTime)
 
 void Physics::UpdateOrientation(Ref<PhysicsComponent> body, float deltaTime)
 {
-	float changeinAngle = VMath::mag(body->angularVel) * deltaTime * RADIANS_TO_DEGREES;
-	Vec3 axisOfRotation = VMath::normalize(body->angularVel);
+	Vec3 angVel = body->inverseRotationMatrix * body->angularVel;
+
+	float changeinAngle = VMath::mag(angVel) * deltaTime * RADIANS_TO_DEGREES;
+	if (fabs(changeinAngle) < VERY_SMALL) {
+		return;
+	};
+	Vec3 axisOfRotation = VMath::normalize(angVel);
 	Quaternion deltaQ = QMath::angleAxisRotation(changeinAngle, axisOfRotation);
 	body->orientation = deltaQ * body->orientation;
 }
@@ -65,6 +70,25 @@ void Physics::PlaneConstraint(Ref<PhysicsComponent> body, float deltaTime, const
 	Vec3 JT = normal;
 	Vec3 changeInVelocity = (1.0f / body->mass) * JT * langrangian;
 	body->vel += changeInVelocity;
+}
+void Physics::MouseConstraint(Ref<PhysicsComponent> body, float deltaTime, const MATH::Vec3& mousePos)
+{
+	Vec3 rVector = mousePos - body->pos;
+	Vec3 positionConstraint = body->pos + rVector - mousePos;
+	float boungardStabilization = -0.15f;
+	if (deltaTime < VERY_SMALL) {
+		deltaTime = 1.0f / 60.0f;
+	}
+	Vec3 bias = boungardStabilization * positionConstraint / deltaTime;
+	Vec3 JV = body->vel + VMath::cross(body->angularVel, rVector);
+	Matrix3 massEffective = {
+		(1 + rVector.z * rVector.z + rVector.y * rVector.y), -rVector.y * rVector.x, -rVector.z * rVector.x,
+		-rVector.y * rVector.x, (1 + rVector.z * rVector.z + rVector.x * rVector.x), -rVector.z * rVector.y,
+		-rVector.z * rVector.x, -rVector.z * rVector.y, (1 + rVector.x * rVector.x + rVector.y * rVector.y)
+	};
+	Vec3 langrangian = MMath::inverse(massEffective) * (-JV);
+	body->vel += langrangian;
+	body->angularVel += VMath::cross(rVector, langrangian);
 }
 void Physics::UpdateTransform(Ref<Actor> actor)
 {

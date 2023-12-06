@@ -109,9 +109,9 @@ RayIntersectionInfo GEOMETRY::Cylinder::rayIntersectionInfo(const Ray& ray) cons
             return RayIntersectionInfo();
         }
     }
-    else {
-        return rayInfo;
-    }
+    
+    return rayInfo;
+    
 }
 
 RayIntersectionInfo GEOMETRY::Cylinder::checkInfiniteCylinder(const Ray& ray) const
