@@ -68,6 +68,78 @@ void CameraActor::UpdateProjectionMatrix(const float fovy, const float aspectRat
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
+void CameraActor::normalizePlane(Plane& plane) {
+	float mag = sqrt(plane.x * plane.x + plane.y * plane.y + plane.z * plane.z);
+	plane.x /= mag;
+	plane.y /= mag;
+	plane.z /= mag;
+	plane.d /= mag;
+}
+
+Halfspace CameraActor::ClassifyPoint(const Plane& plane, const Vec3& pt)
+{
+	float d;
+	d = plane.x * pt.x + plane.y * pt.y + plane.z * pt.z + plane.d;
+	if (d < 0) return NEGATIVE;
+	if (d > 0) return POSITIVE;
+	return ON_PLANE;
+}
+
+void CameraActor::ExtractPlanesGL(
+	Plane* p_planes,
+	bool normalize) {
+	Matrix4 comboMatrix = viewMatrix * projectionMatrix;
+
+	// left clipping plane
+	p_planes[0].x = comboMatrix[12] + comboMatrix[0];
+	p_planes[0].y = comboMatrix[13] + comboMatrix[1];
+	p_planes[0].z = comboMatrix[14] + comboMatrix[2];
+	p_planes[0].d = comboMatrix[15] + comboMatrix[3];
+
+	// right clipping plane
+	p_planes[1].x = comboMatrix[12] - comboMatrix[0];
+	p_planes[1].y = comboMatrix[13] - comboMatrix[1];
+	p_planes[1].z = comboMatrix[14] - comboMatrix[2];
+	p_planes[1].d = comboMatrix[15] - comboMatrix[3];
+
+	// top clipping plane
+	p_planes[2].x = comboMatrix[12] - comboMatrix[4];
+	p_planes[2].y = comboMatrix[13] - comboMatrix[5];
+	p_planes[2].z = comboMatrix[14] - comboMatrix[6];
+	p_planes[2].d = comboMatrix[15] - comboMatrix[7];
+
+	// bottom clipping plane
+	p_planes[3].x = comboMatrix[12] + comboMatrix[4];
+	p_planes[3].y = comboMatrix[13] + comboMatrix[5];
+	p_planes[3].z = comboMatrix[14] + comboMatrix[6];
+	p_planes[3].d = comboMatrix[15] + comboMatrix[7];
+
+	// near clipping plane
+	p_planes[4].x = comboMatrix[12] + comboMatrix[8];
+	p_planes[4].y = comboMatrix[13] + comboMatrix[9];
+	p_planes[4].z = comboMatrix[14] + comboMatrix[10];
+	p_planes[4].d = comboMatrix[15] + comboMatrix[11];
+
+	// far clipping plane
+	p_planes[5].x = comboMatrix[12] - comboMatrix[8];
+	p_planes[5].y = comboMatrix[13] - comboMatrix[9];
+	p_planes[5].z = comboMatrix[14] - comboMatrix[10];
+	p_planes[5].d = comboMatrix[15] - comboMatrix[11];
+
+	if (normalize) {
+		for (int i = 0; i < 6; i++) {
+			normalizePlane(p_planes[i]);
+		}
+	}
+}
+
+
+// a function that checks if the object is in the view frustum
+bool CameraActor::isInBoxView(Vec3 point)
+{
+	poi
+}
+
 void CameraActor::UpdateViewMatrix()
 {
 	// let's hope we have transform component!

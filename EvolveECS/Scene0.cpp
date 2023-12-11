@@ -227,13 +227,16 @@ void Scene0::Render() const
 		glUseProgram(actor->GetComponent<ShaderComponent>()->GetProgram());
 		glUniformMatrix4fv(actor->GetComponent<ShaderComponent>()->GetUniformID("modelMatrix"), 1, GL_FALSE, actor->GetModelMatrix());
 		glBindTexture(GL_TEXTURE_2D, actor->GetComponent<MaterialComponent>()->getTextureID());
-		if (renderMeshes) {
-			actor->GetComponent<MeshComponent>()->Render(GL_TRIANGLES);
+		if (camera->isInBoxView(actor->GetComponent<TransformComponent>()->pos)) {
+			if (renderMeshes) {
+				actor->GetComponent<MeshComponent>()->Render(GL_TRIANGLES);
+			}
+			if (renderCollisionShapes) {
+				// Drawing the primitive geometry associated with the mesh to help debug ray intersects, culling, and collision detection
+				actor->GetComponent<ShapeComponent>()->Render();
+			}
 		}
-		if (renderCollisionShapes) {
-			// Drawing the primitive geometry associated with the mesh to help debug ray intersects, culling, and collision detection
-			actor->GetComponent<ShapeComponent>()->Render();
-		}
+
 	}
 }
 

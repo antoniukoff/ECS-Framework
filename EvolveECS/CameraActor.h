@@ -4,16 +4,27 @@
 #pragma once
 #include "Actor.h"
 #include "TransformComponent.h"
+#include <array>
+#include <Plane.h>
+
+enum Halfspace
+{
+	NEGATIVE = -1,
+	ON_PLANE = 0,
+	POSITIVE = 1,
+};
 
 class CameraActor:public Actor {
 private:
 	// The camera is nothing but a projection and a view
 	// These are not pointers, so never delete them! They are created on the stack
 	// The automatic constructor will be the identity
+	//std::array<Plane, 6> frustumPlanes;
 	Matrix4 projectionMatrix;
 	Matrix4 viewMatrix;
 	GLuint uboMatricesID; // can be an unsigned int instead of a GLuint
 	const GLuint bindingPoint = 0; // This must be unique to the camera = 0. And never change it! This will be where the VRAM needs to know where this is (and the shader too). btw lights will be = 1
+	std::array<Plane, 6> frustumPlanes;
 public:
 	CameraActor(Component* parent_);
 	virtual ~CameraActor();
@@ -31,6 +42,10 @@ public:
 	// need aspectRatio of window, near and far clipping planes
 	// these are the standard arguments for generating the perspective matrix in OpenGL
 	void UpdateProjectionMatrix(const float fovy, const float aspectRatio, const float near, const float far);
+	void normalizePlane(Plane & plane);
+	Halfspace ClassifyPoint(const Plane& plane, const Vec3& pt);
+	void ExtractPlanesGL(Plane* p_planes, bool normalize);
+	bool isInBoxView(Vec3 point);
 	void UpdateViewMatrix();
 	GLuint GetMatricesID() const { return uboMatricesID; }
 };
