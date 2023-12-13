@@ -44,7 +44,7 @@ public:
 	void UpdateProjectionMatrix(const float fovy, const float aspectRatio, const float near, const float far);
 	void normalizePlane(Plane & plane);
 	Halfspace ClassifyPoint(const Plane& plane, const Vec3& pt);
-	void ExtractPlanesGL(Plane* p_planes, bool normalize);
+	void ExtractPlanesGL(bool normalize);
 	bool isInBoxView(Vec3 point);
 	void UpdateViewMatrix();
 	GLuint GetMatricesID() const { return uboMatricesID; }

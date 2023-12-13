@@ -30,5 +30,7 @@ struct Scene0 : public Scene
 	Ref<Actor> pickedActor;
 	bool haveClickedOnSomething = false;
 	Vec3 intersectionPoint;
+
+	Ref<Actor> sphere;
 };
 

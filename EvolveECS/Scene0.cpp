@@ -22,7 +22,8 @@ bool Scene0::OnCreate()
 	XMLAssetManager assetManager;
 	// Make sure these names match the stuff in your xml file:
 	std::vector<std::string> names{ 
-		/*"ActorGameBoard",*/ /*"ActorChecker1",*/ "ActorChecker2", 
+		"ActorGameBoard", "ActorChecker1", "ActorChecker2",
+		"ActorDebug",
 		"ActorSkull", "ActorCube", "ActorMario"
 	};
 	for (const auto& name : names) {
@@ -35,6 +36,9 @@ bool Scene0::OnCreate()
 	for (auto it = actors.begin(); it != actors.end(); ++it) {
 		Ref<Actor> actor = std::dynamic_pointer_cast<Actor>(it->second);
 		Ref<TransformComponent> transformComponent = actor->GetComponent <TransformComponent>();
+		if (actor->GetComponent<ShapeComponent>()->shapeType == ShapeType::box) {
+			continue;
+		}
 		Ref<PhysicsComponent> physicsComponent = actor->GetComponent <PhysicsComponent>();
 		Matrix3 inverseRotationalMatrix_ = MMath::inverse(MMath::toMatrix3(transformComponent->orientation));
 		physicsComponent->inverseRotationMatrix = inverseRotationalMatrix_;
@@ -144,6 +148,9 @@ void Scene0::HandleEvents(const SDL_Event& sdlEvent)
 					Ref<PhysicsComponent> physicsComponent = actor->GetComponent <PhysicsComponent>();
 					Matrix3 inverseRotationalMatrix_ = MMath::inverse(MMath::toMatrix3(transformComponent->orientation));
 					physicsComponent->inverseRotationMatrix = inverseRotationalMatrix_;
+					Ref<TransformComponent> transform = std::dynamic_pointer_cast<Actor>(actors.find("ActorDebug")->second)->GetComponent<TransformComponent>();
+					transform->pos = intersectionPoint;
+					transform->scale = Vec3(0.5, 0.5f, 0.5f);
 				}
 			}
 		}

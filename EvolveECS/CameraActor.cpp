@@ -85,50 +85,48 @@ Halfspace CameraActor::ClassifyPoint(const Plane& plane, const Vec3& pt)
 	return ON_PLANE;
 }
 
-void CameraActor::ExtractPlanesGL(
-	Plane* p_planes,
-	bool normalize) {
-	Matrix4 comboMatrix = viewMatrix * projectionMatrix;
+void CameraActor::ExtractPlanesGL(bool normalize) {
+	Matrix4 comboMatrix = projectionMatrix * viewMatrix;
 
-	// left clipping plane
-	p_planes[0].x = comboMatrix[12] + comboMatrix[0];
-	p_planes[0].y = comboMatrix[13] + comboMatrix[1];
-	p_planes[0].z = comboMatrix[14] + comboMatrix[2];
-	p_planes[0].d = comboMatrix[15] + comboMatrix[3];
-
+	// left clipping plane 
+	frustumPlanes[0].x = comboMatrix[3] + comboMatrix[0];
+	frustumPlanes[0].y = comboMatrix[7] + comboMatrix[4];
+	frustumPlanes[0].z = comboMatrix[11] + comboMatrix[8];
+	frustumPlanes[0].d = comboMatrix[15] + comboMatrix[12]; 
+	
 	// right clipping plane
-	p_planes[1].x = comboMatrix[12] - comboMatrix[0];
-	p_planes[1].y = comboMatrix[13] - comboMatrix[1];
-	p_planes[1].z = comboMatrix[14] - comboMatrix[2];
-	p_planes[1].d = comboMatrix[15] - comboMatrix[3];
+	frustumPlanes[1].x = comboMatrix[3] - comboMatrix[0];
+	frustumPlanes[1].y = comboMatrix[7] - comboMatrix[4];
+	frustumPlanes[1].z = comboMatrix[11] - comboMatrix[8];
+	frustumPlanes[1].d = comboMatrix[15] - comboMatrix[12];
 
 	// top clipping plane
-	p_planes[2].x = comboMatrix[12] - comboMatrix[4];
-	p_planes[2].y = comboMatrix[13] - comboMatrix[5];
-	p_planes[2].z = comboMatrix[14] - comboMatrix[6];
-	p_planes[2].d = comboMatrix[15] - comboMatrix[7];
-
+	frustumPlanes[2].x = comboMatrix[3] - comboMatrix[1];
+	frustumPlanes[2].y = comboMatrix[7] - comboMatrix[5];
+	frustumPlanes[2].z = comboMatrix[11] - comboMatrix[9];
+	frustumPlanes[2].d = comboMatrix[15] - comboMatrix[13];
+	
 	// bottom clipping plane
-	p_planes[3].x = comboMatrix[12] + comboMatrix[4];
-	p_planes[3].y = comboMatrix[13] + comboMatrix[5];
-	p_planes[3].z = comboMatrix[14] + comboMatrix[6];
-	p_planes[3].d = comboMatrix[15] + comboMatrix[7];
-
+	frustumPlanes[3].x = comboMatrix[3] + comboMatrix[1];
+	frustumPlanes[3].y = comboMatrix[7] + comboMatrix[5];
+	frustumPlanes[3].z = comboMatrix[11] + comboMatrix[9];
+	frustumPlanes[3].d = comboMatrix[15] + comboMatrix[13];
+	
 	// near clipping plane
-	p_planes[4].x = comboMatrix[12] + comboMatrix[8];
-	p_planes[4].y = comboMatrix[13] + comboMatrix[9];
-	p_planes[4].z = comboMatrix[14] + comboMatrix[10];
-	p_planes[4].d = comboMatrix[15] + comboMatrix[11];
-
+	frustumPlanes[4].x = comboMatrix[3] + comboMatrix[2];
+	frustumPlanes[4].y = comboMatrix[7] + comboMatrix[6];
+	frustumPlanes[4].z = comboMatrix[11] + comboMatrix[10];
+	frustumPlanes[4].d = comboMatrix[15] + comboMatrix[14];
+	
 	// far clipping plane
-	p_planes[5].x = comboMatrix[12] - comboMatrix[8];
-	p_planes[5].y = comboMatrix[13] - comboMatrix[9];
-	p_planes[5].z = comboMatrix[14] - comboMatrix[10];
-	p_planes[5].d = comboMatrix[15] - comboMatrix[11];
+	frustumPlanes[5].x = comboMatrix[3] - comboMatrix[2];
+	frustumPlanes[5].y = comboMatrix[7] - comboMatrix[6];
+	frustumPlanes[5].z = comboMatrix[11] - comboMatrix[10];
+	frustumPlanes[5].d = comboMatrix[15] - comboMatrix[14];
 
 	if (normalize) {
 		for (int i = 0; i < 6; i++) {
-			normalizePlane(p_planes[i]);
+			normalizePlane(frustumPlanes[i]);
 		}
 	}
 }
@@ -137,7 +135,12 @@ void CameraActor::ExtractPlanesGL(
 // a function that checks if the object is in the view frustum
 bool CameraActor::isInBoxView(Vec3 point)
 {
-	poi
+	for (int i = 0; i < 6; i++) {
+		if (ClassifyPoint(frustumPlanes[i], point) == NEGATIVE) {
+			return false;
+		}
+	}
+	return true;
 }
 
 void CameraActor::UpdateViewMatrix()
@@ -166,6 +169,8 @@ void CameraActor::UpdateViewMatrix()
 	glBindBuffer(GL_UNIFORM_BUFFER, uboMatricesID);
 	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(Matrix4), viewMatrix);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	ExtractPlanesGL(true);
 }
 
 void CameraActor::OnDestroy()

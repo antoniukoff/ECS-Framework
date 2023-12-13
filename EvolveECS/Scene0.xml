@@ -73,6 +73,17 @@
 		<Physics />
 	  </Actor>
 
+	  <Actor actorname="ActorDebug" parent="none">
+		  <Transform posx="0.0" posy="0.0" posz="-16.0"
+					 angleDeg="45.0" axisx="1.0" axisy="0.0" axisz="0.0"
+					 scalex="1.0" scaley="1.0" scalez="1.0"/>
+		  <Mesh name="CubeMesh"/>
+		  <Shape name="CubeShape"/>
+		  <Shader name ="Shader"/>
+		  <Material name ="BoardMaterial"/>
+		  <Physics />
+	  </Actor>
+
 	  <Actor actorname="ActorChecker1" parent="ActorGameBoard">
 		  <Transform posx="-4.5" posy="-4.5" posz="0.0"
 					 angleDeg="0.0" axisx="1.0" axisy="0.0" axisz="0.0"
@@ -86,7 +97,7 @@
 
 	  <Actor actorname="ActorChecker2" parent="none">
 		  <Transform posx="18.0" posy="0.0" posz="-14.0"
-					 angleDeg="0.0" axisx="1.0" axisy="0.0" axisz="0.0"
+					 angleDeg="45.0" axisx="1.0" axisy="0.0" axisz="0.0"
 					 scalex="1.0" scaley="1.0" scalez="1.0"/>
 		  <Mesh name="CheckerMesh"/>
 		  <Shape name="CheckerCylinderShape"/>
