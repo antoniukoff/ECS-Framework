@@ -20,10 +20,11 @@ EvolveECS is a 3D engine designed for seamless constrained and unconstrained phy
 ### Prerequisites:
 - Ensure you have Visual Studio installed, as the project is configured for this IDE.
 - The engine is built for 32-bit (x86) systems.
+- All necessary libraries are already pre-built, allowing you to run the project immediately after cloning.
 
 ### Opening the Project:
 - Open the cloned repository in Visual Studio.
-- Choose any available demo projects as the startup project.
+- To see the physics constraints in action, uncomment the constraint functions from the [Update()] method and tweak the parameters in the [Scene0.xml] file.
 
 ### Building and Running:
 - Build the project in 'Debug' mode for the x86 platform.
@@ -31,11 +32,17 @@ EvolveECS is a 3D engine designed for seamless constrained and unconstrained phy
 
 ## Features
 
-- **XML Data-Oriented Parsing**: Integration with TinyXML for robust and efficient data handling.
-- **3D Frustrum Culling**: Optimization technique to enhance rendering performance in complex scenes.
-- **Collision Debug Meshes Drawing**: Tools for visualizing and debugging collision detection.
-- **Ray Cast Collision Detection**: Advanced algorithm for precise collision checks.
-- **Physics Constraints**: Includes mouse click, plane, and straight-line constraints for dynamic simulation control.
+### Building and Running:
+- Build the project in 'Debug' mode for the x86 platform.
+- Run the project to explore EvolveECS.
+
+## Features
+
+- **XML Data-Oriented Parsing**
+- **3D Frustrum Culling**
+- **Collision Debug Meshes**
+- **Ray Cast Collision Detection**
+- **Physics Constraints**
 
 ## Future Development Plans
 
