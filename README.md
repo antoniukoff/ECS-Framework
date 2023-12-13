@@ -11,28 +11,26 @@ EvolveECS is a 3D engine designed for seamless constrained and unconstrained phy
 
 ## Installation
 
-### Clone the Repository:
-- Clone the EvolveECS repository into your desired folder:
-```
-     git clone https://github.com/antoniukoff/InfernoEngine-Demo
-```
+## Installation
+1. **Clone the Repository**: 
+   - Clone the EvolveECS repository into your desired folder:
+     ```
+     git clone https://github.com/antoniukoff/ECS-Framework
+     ```
 
-### Prerequisites:
-- Ensure you have Visual Studio installed, as the project is configured for this IDE.
-- The engine is built for 32-bit (x86) systems.
-- All necessary libraries are already pre-built, allowing you to run the project immediately after cloning.
+2. **Prerequisites**:
+   - Ensure you have Visual Studio installed, as the project is configured for this IDE.
+   - The engine is built for 32-bit (x86) systems.
+   - All necessary libraries are pre-built for ease of setup.
 
-### Opening the Project:
-- Open the cloned repository in Visual Studio.
-- To see the physics constraints in action, uncomment the constraint functions from the **Update()** method and tweak the parameters in the **Scene0.xml** file.
+3. **Opening the Project**:
+   - Open the cloned repository in Visual Studio.
+   - Choose any available demo projects as the startup project.
+   - To see the physics constraints in action, uncomment the constraint functions from the update method.
 
-### Building and Running:
-- Build the project in 'Debug' mode for the x86 platform.
-- Run the project to explore the features of EvolveECS.
-
-### Building and Running:
-- Build the project in 'Debug' mode for the x86 platform.
-- Run the project to explore EvolveECS.
+4. **Building and Running**:
+   - Build the project in 'Debug' mode for the x86 platform.
+   - Run the project to explore the features of EvolveECS.
 
 ## Features
 - **XML Data-Oriented Parsing**
