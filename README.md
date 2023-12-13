@@ -26,7 +26,7 @@ EvolveECS is a 3D engine designed for seamless constrained and unconstrained phy
 3. **Opening the Project**:
    - Open the cloned repository in Visual Studio.
    - Choose any available demo projects as the startup project.
-   - To see the physics constraints in action, uncomment the constraint functions from the update method.
+   - To see the physics constraints in action, uncomment the constraint functions from the **Update()** method and tweak the parameters in the **Scene0.xml** file.
 
 4. **Building and Running**:
    - Build the project in 'Debug' mode for the x86 platform.
@@ -40,8 +40,6 @@ EvolveECS is a 3D engine designed for seamless constrained and unconstrained phy
 - **Physics Constraints**
 
 ## Future Development Plans
-As EvolveECS continues to grow, we are looking forward to adding:
-
 - **Cross-Platform Build System**
 - **Dedicated AI Engine**
 - **Spatial Partitioning**
