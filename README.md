@@ -30,14 +30,11 @@ EvolveECS is a 3D engine designed for seamless constrained and unconstrained phy
 - Build the project in 'Debug' mode for the x86 platform.
 - Run the project to explore the features of EvolveECS.
 
-## Features
-
 ### Building and Running:
 - Build the project in 'Debug' mode for the x86 platform.
 - Run the project to explore EvolveECS.
 
 ## Features
-
 - **XML Data-Oriented Parsing**
 - **3D Frustrum Culling**
 - **Collision Debug Meshes**
@@ -45,7 +42,6 @@ EvolveECS is a 3D engine designed for seamless constrained and unconstrained phy
 - **Physics Constraints**
 
 ## Future Development Plans
-
 As EvolveECS continues to grow, we are looking forward to adding:
 
 - **Cross-Platform Build System**
@@ -54,7 +50,6 @@ As EvolveECS continues to grow, we are looking forward to adding:
 - **Renderer Abstraction**
 
 ## Credits
-
 EvolveECS is built with the help of the following open-source libraries:
 - **GLEW (OpenGL Extension Wrangler Library)**: [GLEW GitHub](https://github.com/nigels-com/glew)
 - **TinyXML**:[TinyXML GitHub](https://github.com/leethomason/tinyxml2)
