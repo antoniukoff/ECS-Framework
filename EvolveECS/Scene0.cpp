@@ -22,7 +22,7 @@ bool Scene0::OnCreate()
 	XMLAssetManager assetManager;
 	// Make sure these names match the stuff in your xml file:
 	std::vector<std::string> names{ 
-		"ActorGameBoard", "ActorChecker1", "ActorChecker2",
+		"ActorGameBoard", /*"ActorChecker1",*/ "ActorChecker2",
 		"ActorDebug",
 		"ActorSkull", "ActorCube", "ActorMario"
 	};
@@ -36,10 +36,9 @@ bool Scene0::OnCreate()
 	for (auto it = actors.begin(); it != actors.end(); ++it) {
 		Ref<Actor> actor = std::dynamic_pointer_cast<Actor>(it->second);
 		Ref<TransformComponent> transformComponent = actor->GetComponent <TransformComponent>();
-		if (actor->GetComponent<ShapeComponent>()->shapeType == ShapeType::box) {
-			continue;
-		}
 		Ref<PhysicsComponent> physicsComponent = actor->GetComponent <PhysicsComponent>();
+
+		// Fixes orientation
 		Matrix3 inverseRotationalMatrix_ = MMath::inverse(MMath::toMatrix3(transformComponent->orientation));
 		physicsComponent->inverseRotationMatrix = inverseRotationalMatrix_;
 	}
@@ -71,11 +70,11 @@ void Scene0::HandleEvents(const SDL_Event& sdlEvent)
 
 		}
 		else if (sdlEvent.key.keysym.scancode == SDL_SCANCODE_D) {
-			cameraTransform->SetTransform(cameraTransform->pos, cameraTransform->GetOrientation() * QMath::angleAxisRotation(2.0f, Vec3(0.0f, 1.0f, 0.0f)));
+			cameraTransform->SetTransform(cameraTransform->pos, cameraTransform->GetOrientation() * QMath::angleAxisRotation(-2.0f, Vec3(0.0f, 1.0f, 0.0f)));
 			camera->UpdateViewMatrix();
 		}
 		else if (sdlEvent.key.keysym.scancode == SDL_SCANCODE_A) {
-			cameraTransform->SetTransform(cameraTransform->pos, cameraTransform->GetOrientation() * QMath::angleAxisRotation(-2.0f, Vec3(0.0f, 1.0f, 0.0f)));
+			cameraTransform->SetTransform(cameraTransform->pos, cameraTransform->GetOrientation() * QMath::angleAxisRotation(2.0f, Vec3(0.0f, 1.0f, 0.0f)));
 			camera->UpdateViewMatrix();
 
 		}
@@ -121,10 +120,7 @@ void Scene0::HandleEvents(const SDL_Event& sdlEvent)
 			Vec3 rayStart = camera->GetComponent<TransformComponent>()->pos;
 			///Ray direction is from the camera position to the front clipping plane
 			Vec3 rayDir = mouseWorldCoords - rayStart;
-			//rayDir.print();
-			// TODO for Assignment 2: 
-			// Get a ray pointing into the world, We have the x, y pixel coordinates
-			// Need to convert this into world space to build our ray
+
 
 			// Loop through all the actors and check if the ray has collided with them
 			// Pick the one with the smallest positive t value
@@ -142,8 +138,8 @@ void Scene0::HandleEvents(const SDL_Event& sdlEvent)
 				rayInfo = shapeComponent->shape->rayIntersectionInfo(rayPaulNealeSpace);
 				if (rayInfo.isIntersected) {
 					std::cout << "You picked: " << it->first << '\n';
-					pickedActor = actor; // make a member variable called pickedActor. Will come in handy later…
-					haveClickedOnSomething = true; // make this a member variable too. Set it to false before we loop over each actor
+					pickedActor = actor;
+					haveClickedOnSomething = true;
 					intersectionPoint = transformComponent->GetTransformMatrix() * rayInfo.intersectoinPoint;
 					Ref<PhysicsComponent> physicsComponent = actor->GetComponent <PhysicsComponent>();
 					Matrix3 inverseRotationalMatrix_ = MMath::inverse(MMath::toMatrix3(transformComponent->orientation));
@@ -165,59 +161,50 @@ void Scene0::Update(const float deltaTime)
 {	
 	if (haveClickedOnSomething) {
 		Ref<PhysicsComponent> body = pickedActor->GetComponent<PhysicsComponent>();
+		ShapeType shape = pickedActor->GetComponent<ShapeComponent>()->shapeType;
 		// Set up gravity and drag forces
 		Vec3 gravityForce(0.0f, -9.8f * body->mass, 0.0f);
 		float dragCoeff = 0.25f;
 		Vec3 dragForce = body->vel * (-dragCoeff);
 		Vec3 netForce = gravityForce + dragForce;
 		Physics::ApplyForce(body, netForce);
-/*
-* We are going to update the position and velocity in separate steps
-* This will make our constrained motion a bit easier later on
-*/
-		// Calculates the approximation of the velocity
+
+		/*
+		* We are going to update the position and velocity in separate steps
+		* This will make our constrained motion a bit easier later on*/
 		Physics::UpdateVel(body, deltaTime);
 
-		// Correct the velocity with constraints
-/*** Straight line constraint ***/
+		if (shape == ShapeType::sphere) {
+			// The plane is defined by a normal and a distance from the origin
+			Ref<Actor> gameBoard = std::dynamic_pointer_cast<Actor>(actors.find("ActorGameBoard")->second);
+			Ref<ShapeComponent> shapeComponent = pickedActor->GetComponent<ShapeComponent>();
+			Vec3 planeNormal = VMath::normalize(Vec3(0.0f, 1.0f, 1.0f));
+			Vec3 pointOnPlane = gameBoard->GetComponent<TransformComponent>()->pos;
 
-		//float slope = -1.0f;
-		//float yIntercept = 15.0f;
-		//Physics::StraightLineConstraint(body, deltaTime, slope, yIntercept);
-
-/*** Plane constraint ***/
-//		// The plane is defined by a normal and a distance from the origin
-//		Vec3 planeNormal = VMath::normalize(Vec3(0.0f, 1.0f, 1.0f));
-//		Ref<Actor> gameBoard = std::dynamic_pointer_cast<Actor>(actors.find("ActorGameBoard")->second);
-//		// The point on the plane is the position of the game board
-//		Vec3 pointOnPlane = gameBoard->GetComponent<TransformComponent>()->pos;
-//		// The distance from the origin is the dot product of the normal and the point on the plane
-//		float planeDistance = VMath::dot(planeNormal, pointOnPlane);
-//		Ref<ShapeComponent> shapeComponent = pickedActor->GetComponent<ShapeComponent>();
-//		float radius = 0.0f;
-//		if (shapeComponent->shapeType == ShapeType::sphere) {
-//			radius = std::dynamic_pointer_cast<GEOMETRY::Sphere>(shapeComponent->shape)->r;
-//			planeDistance += radius; // Adjust for sphere radius
-//			// Calculate the angular velocity using the velocity and the radius of skull
-//			float angularVelMagnitude = VMath::mag(body->vel) / radius;
-///*
-//* the axis of rotation is the cross product of the plane normal and the velocity
-//* e.g. if the plane normal is (0, 1, 0) and the velocity is (1, 0, 0)
-//* the axis of rotation is (0, 0, -1)
-//* can test it by using the right hand rule
-//*/
-//			Vec3 axisOfRotation = VMath::normalize(VMath::cross(planeNormal, body->vel));
-//			// There seems to be a bug in angularVelMag
-//			body->angularVel = angularVelMagnitude * axisOfRotation;
-//		}
-//		Physics::PlaneConstraint(body, deltaTime, planeNormal, planeDistance);
-		Physics::MouseConstraint(body, deltaTime, intersectionPoint);
-		Physics::UpdatePos(body, deltaTime);
-		Physics::UpdateOrientation(body, deltaTime);
-		// Ensure the actor’s transform component matches the physics component
-		Physics::UpdateTransform(pickedActor);
+			float planeDistance = VMath::dot(planeNormal, pointOnPlane);
+			float radius = std::dynamic_pointer_cast<GEOMETRY::Sphere>(shapeComponent->shape)->r;
+			planeDistance += radius; // Adjust for sphere radius
+			// Calculate the angular velocity using the velocity and the radius of skull
+			Physics::PlaneConstraint(body, deltaTime, planeNormal, planeDistance);
+			}
+			else if (shape == ShapeType::box) {
+				Physics::MouseConstraint(body, deltaTime, intersectionPoint);
+			}
+			else if (shape == ShapeType::capsule) {
+				Physics::MouseConstraint(body, deltaTime, intersectionPoint);
+			}
+			else if (shape == ShapeType::cylinder) {
+				float slope = -1.0f;
+				float yIntercept = 20.0f;
+				Physics::StraightLineConstraint(body, deltaTime, slope, yIntercept);
+			}
+			Physics::UpdatePos(body, deltaTime);
+			Physics::UpdateOrientation(body, deltaTime);
+			// Ensure the actor’s transform component matches the physics component
+			Physics::UpdateTransform(pickedActor);
 	}
 }
+
 
 void Scene0::Render() const
 {
@@ -231,10 +218,11 @@ void Scene0::Render() const
 
 	for (auto it = actors.begin(); it != actors.end(); ++it) {
 		Ref<Actor> actor = std::dynamic_pointer_cast<Actor>(it->second);
-		glUseProgram(actor->GetComponent<ShaderComponent>()->GetProgram());
-		glUniformMatrix4fv(actor->GetComponent<ShaderComponent>()->GetUniformID("modelMatrix"), 1, GL_FALSE, actor->GetModelMatrix());
-		glBindTexture(GL_TEXTURE_2D, actor->GetComponent<MaterialComponent>()->getTextureID());
 		if (camera->isInBoxView(actor->GetComponent<TransformComponent>()->pos)) {
+			// Draw mesh
+			glUseProgram(actor->GetComponent<ShaderComponent>()->GetProgram());
+			glUniformMatrix4fv(actor->GetComponent<ShaderComponent>()->GetUniformID("modelMatrix"), 1, GL_FALSE, actor->GetModelMatrix());
+			glBindTexture(GL_TEXTURE_2D, actor->GetComponent<MaterialComponent>()->getTextureID());
 			if (renderMeshes) {
 				actor->GetComponent<MeshComponent>()->Render(GL_TRIANGLES);
 			}
@@ -243,7 +231,6 @@ void Scene0::Render() const
 				actor->GetComponent<ShapeComponent>()->Render();
 			}
 		}
-
 	}
 }
 
