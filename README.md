@@ -10,8 +10,6 @@ EvolveECS is a 3D engine designed for seamless constrained and unconstrained phy
 - [Credits](#credits)
 
 ## Installation
-
-## Installation
 1. **Clone the Repository**: 
    - Clone the EvolveECS repository into your desired folder:
      ```
