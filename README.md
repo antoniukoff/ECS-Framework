@@ -31,6 +31,7 @@ EvolveECS is a 3D engine designed for seamless constrained and unconstrained phy
    - Run the project to explore the features of EvolveECS.
 
 ## Features
+- **Entity-Component Architecture**
 - **XML Data-Oriented Parsing**
 - **3D Frustrum Culling**
 - **Collision Debug Meshes**
