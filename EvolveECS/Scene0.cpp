@@ -123,32 +123,37 @@ void Scene0::HandleEvents(const SDL_Event& sdlEvent)
 
 
 			// Loop through all the actors and check if the ray has collided with them
-			// Pick the one with the smallest positive t value
-			for (auto it = actors.begin(); it != actors.end(); ++it) {
-				Ref<Actor> actor = std::dynamic_pointer_cast<Actor>(it->second);
-				Ref<TransformComponent> transformComponent = actor->GetComponent <TransformComponent>();
-				Ref<ShapeComponent> shapeComponent = actor->GetComponent<ShapeComponent>();
-				// TODO for Assignment 2: 
-				// Transform the ray into the local space of the object and check if a collision occured
-				Matrix4 worldToPaulNeale = MMath::inverse(actor->GetModelMatrix());
-				Vec4 rayStartPaulNeale = worldToPaulNeale * Vec4(rayStart, 1.0f);
-				Vec4 rayDirPaulNealeSpace = worldToPaulNeale * Vec4(rayDir, 0.0f);
-				GEOMETRY::Ray rayPaulNealeSpace(rayStartPaulNeale, rayDirPaulNealeSpace);
+			// Iterate over each actor to detect ray collisions, selecting the closest one
+			for (auto& actorPair : actors) {
+				auto actor = std::dynamic_pointer_cast<Actor>(actorPair.second);
+				auto transformComponent = actor->GetComponent<TransformComponent>();
+				auto shapeComponent = actor->GetComponent<ShapeComponent>();
 
-				rayInfo = shapeComponent->shape->rayIntersectionInfo(rayPaulNealeSpace);
+				// Transform the ray to the object's local space and check for a collision
+				auto worldToLocalMatrix = MMath::inverse(actor->GetModelMatrix());
+				auto localRayStart = worldToLocalMatrix * Vec4(rayStart, 1.0f);
+				auto localRayDir = worldToLocalMatrix * Vec4(rayDir, 0.0f);
+				GEOMETRY::Ray localRay(localRayStart, localRayDir);
+
+				auto rayInfo = shapeComponent->shape->rayIntersectionInfo(localRay);
 				if (rayInfo.isIntersected) {
-					std::cout << "You picked: " << it->first << '\n';
-					pickedActor = actor;
-					haveClickedOnSomething = true;
-					intersectionPoint = transformComponent->GetTransformMatrix() * rayInfo.intersectoinPoint;
-					Ref<PhysicsComponent> physicsComponent = actor->GetComponent <PhysicsComponent>();
-					Matrix3 inverseRotationalMatrix_ = MMath::inverse(MMath::toMatrix3(transformComponent->orientation));
-					physicsComponent->inverseRotationMatrix = inverseRotationalMatrix_;
-					Ref<TransformComponent> transform = std::dynamic_pointer_cast<Actor>(actors.find("ActorDebug")->second)->GetComponent<TransformComponent>();
-					transform->pos = intersectionPoint;
-					transform->scale = Vec3(0.5, 0.5f, 0.5f);
+					if (actorPair.first != "ActorDebug") {
+						std::cout << "You picked: " << actorPair.first << '\n';
+						pickedActor = actor;
+						haveClickedOnSomething = true;
+						intersectionPoint = transformComponent->GetTransformMatrix() * rayInfo.intersectoinPoint;
+
+						auto physicsComponent = actor->GetComponent<PhysicsComponent>();
+						physicsComponent->inverseRotationMatrix = MMath::inverse(MMath::toMatrix3(transformComponent->orientation));
+
+						// Update the debug actor's position and scale
+						auto debugTransform = std::dynamic_pointer_cast<Actor>(actors["ActorDebug"])->GetComponent<TransformComponent>();
+						debugTransform->pos = intersectionPoint;
+						debugTransform->scale = Vec3(0.5, 0.5f, 0.5f);
+					}
 				}
 			}
+
 		}
 		break;
 	default:
@@ -170,8 +175,8 @@ void Scene0::Update(const float deltaTime)
 		Physics::ApplyForce(body, netForce);
 
 		/*
-		* We are going to update the position and velocity in separate steps
-		* This will make our constrained motion a bit easier later on*/
+		* update the position and velocity in separate steps
+		*/
 		Physics::UpdateVel(body, deltaTime);
 
 		if (shape == ShapeType::sphere) {
@@ -185,6 +190,16 @@ void Scene0::Update(const float deltaTime)
 			float radius = std::dynamic_pointer_cast<GEOMETRY::Sphere>(shapeComponent->shape)->r;
 			planeDistance += radius; // Adjust for sphere radius
 			// Calculate the angular velocity using the velocity and the radius of skull
+			float angularVelMagnitude = VMath::mag(body->vel) / radius;
+			/**
+			* the axis of rotation is the cross product of the plane normal and the velocity
+			* e.g. if the plane normal is (0, 1, 0) and the velocity is (1, 0, 0)
+			* the axis of rotation is (0, 0, -1)
+			* can test it by using the right hand rule
+			*/
+			Vec3 axisOfRotation = VMath::normalize(VMath::cross(planeNormal, body->vel));
+			body->angularVel = angularVelMagnitude * axisOfRotation;
+
 			Physics::PlaneConstraint(body, deltaTime, planeNormal, planeDistance);
 			}
 			else if (shape == ShapeType::box) {
