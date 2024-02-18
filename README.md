@@ -1,13 +1,12 @@
 # EvolveECS
 
+<p align="left">
+  <img src="https://static.wixstatic.com/media/abc956_c09e08ed0d4046c0b4c6ca84a362276f~mv2.gif" alt="InfernoEngine Logo" width="65%"/>
+</p>
+
+
 ## Overview
 EvolveECS is a 3D engine designed for seamless constrained and unconstrained physics simulations.
-
-## Table of Contents
-- [Installation](#installation)
-- [Features](#features)
-- [Future Development Plans](#future-development-plans)
-- [Credits](#credits)
 
 ## Installation
 1. **Clone the Repository**: 
@@ -31,12 +30,17 @@ EvolveECS is a 3D engine designed for seamless constrained and unconstrained phy
    - Run the project to explore the features of EvolveECS.
 
 ## Features
-- **Entity-Component Architecture**
-- **XML Data-Oriented Parsing**
+- **Physics Constraints**:
+  - Straight Line Constraint
+  - Plain Constraint
+  - Mouse Constraint
 - **3D Frustrum Culling**
 - **Collision Debug Meshes**
 - **Ray Cast Collision Detection**
-- **Physics Constraints**
+- **Entity-Component Architecture**
+- **XML Data-Oriented Parsing**
+
+
 
 ## Future Development Plans
 - **Cross-Platform Build System**
