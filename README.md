@@ -1,7 +1,7 @@
 # EvolveECS
 
 <p align="left">
-  <img src="https://static.wixstatic.com/media/abc956_c09e08ed0d4046c0b4c6ca84a362276f~mv2.gif" alt="InfernoEngine Logo" width="65%"/>
+  <img src="/EvolveECS/branding/EvolveECS.gif" alt="InfernoEngine Logo" width="50%"/>
 </p>
 
 
