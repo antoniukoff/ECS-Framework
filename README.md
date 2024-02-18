@@ -1,7 +1,7 @@
 # EvolveECS
 
 <p align="left">
-  <img src="/EvolveECS/branding/EvolveECS.gif" alt="InfernoEngine Logo" width="50%"/>
+  <img src="/EvolveECS/branding/EvolveECS.gif" alt="InfernoEngine Logo" width="75%"/>
 </p>
 
 
